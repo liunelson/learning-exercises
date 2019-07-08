@@ -1,5 +1,5 @@
 # MNIST Database
---- 
+
 This database is taken from [LeCun et al](http://yann.lecun.com/exdb/mnist/). 
 It contains many labelled examples of handwritten digits (0 – 9) 
 in the form of grayscale images (28 x 28 pixels), 
