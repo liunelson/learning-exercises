@@ -2,6 +2,8 @@
 # # Notes and exercises from [Nielsen2015](http://neuralnetworksanddeeplearning.com/)
 # --- 
 
+%reset
+
 #%% [markdown]
 # ## Ch. 1.1 - Perceptrons
 # 
@@ -69,7 +71,59 @@ plt.show()
 # | `train-labels-idx1-ubyte.gz` | training set labels | $28881$ bytes |
 # | `t10k-images-idx3-ubyte.gz` | test set images | $1648877$ bytes | 
 # | `t10k-labels-idx1-ubyte.gz` | test set labels | $4542$ bytes |
+#
+# Approach: 784 nodes in input layer, $n = 15$ nodes in single hidden layer, 
+# 10 nodes in output layer ($0 \ldots 9$).
+
+# Unzip and read test labels
+%reset
+import gzip 
+with gzip.open('E:/Documents/Projects/learning-exercises/datasets/MNIST/t10k-labels-idx1-ubyte.gz', 'rb') as hFile:
+    t10k_lab_data = hFile.read()
+hFile.close()
 
 #%%
-# Approach: 784 nodes in input layer, $n = 15$ nodes in single hidden layer, 
-# 10 nodes in output layer ($0 \ldots 9$). 
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Convert binary data to integer array
+print(int.from_bytes(t10k_lab_data[0:4], byteorder = 'big', signed = False))
+t10k_num = int.from_bytes(t10k_lab_data[4:8], byteorder = 'big', signed = False)
+
+t10k_lab = -1*np.ones((t10k_num, 1))
+for i in range(t10k_num): 
+    t10k_lab[i] = t10k_lab_data[i + 8]
+
+#%% 
+# Unzip and read test images
+with gzip.open('E:/Documents/Projects/learning-exercises/datasets/MNIST/t10k-images-idx3-ubyte.gz', 'rb') as hFile:
+    t10k_img_data = hFile.read()
+hFile.close()
+
+#%%
+# As before...
+print(int.from_bytes(t10k_lab_data[0:4], byteorder = 'big', signed = False))
+print(int.from_bytes(t10k_lab_data[4:(4+4)], byteorder = 'big', signed = False))
+numRow = int.from_bytes(t10k_img_data[8:(8+4)], byteorder = 'big', signed = False)
+numCol = int.from_bytes(t10k_img_data[12:(12+4)], byteorder = 'big', signed = False)
+
+# Image data
+numPix = numRow*numCol
+t10k_img = -1*np.ones((t10k_num, numPix))
+k = 0
+for i in range(t10k_num):
+    for j in range(numPix):
+        k = k + 1
+        t10k_img[i, j] = t10k_img_data[i*(numPix) + j + 16]
+
+#%%
+fig = plt.figure(1)
+fig.suptitle('MNIST t10k')
+for i in range(18):
+    ax = fig.add_subplot(3, 6, i + 1)
+    ax.imshow(np.reshape(t10k_img[i, 0:numPix], (numRow, numCol)))
+    ax.set_aspect(aspect = 1)
+    ax.tick_params(axis = 'x', bottom = False, labelbottom = False)
+    ax.tick_params(axis = 'y', left = False, labelleft = False)
+    ax.set_title('%(index)d (%(label)d)' % {'index': i, 'label': t10k_lab[i]})
+
