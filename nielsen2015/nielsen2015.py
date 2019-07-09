@@ -15,7 +15,7 @@
 #
 # where $y = \text{output}$, $x_i = \text{input}$, and $w_i = \text{weights}$. 
 #
-# Rewrite conditions as $\boldsymbol{w} \cdot \boldsymbol{x} + b \leq 0$, $> 0$    
+# Rewrite conditions as $\mathrm{w} \cdot \mathrm{x} + b \leq 0$, $> 0$    
 # where $b = -\text{threshold}$ is the *bias*.
 # 
 # Perceptrons can be combined to give $\text{AND}, \text{OR}, \text{NAND}$, etc. 
@@ -29,7 +29,7 @@
 #
 # Let's replace it with the *logistic* or *sigmoid* function 
 # $$f(z) = \frac{1}{1 + \mathrm{e}^{-z}}$$ 
-# where $z = \boldsymbol{w} \cdot \boldsymbol{x} + b$.
+# where $z = \mathrm{w} \cdot \mathrm{x} + b$.
 #
 # Thus, 
 # $$\Delta y \approx \sum_i \frac{\partial y}{\partial w_i} \Delta w_i + \frac{\partial y}{\partial b} \Delta b$$ 
@@ -147,13 +147,13 @@ del fig
 # $x = (784 \times 1)$ vector, $y = (10 \times 1)$ vector
 #
 # Define a *cost* (*loss* or *objective*) function: 
-# $$C(\boldsymbol{w}, b) = \frac{1}{2 n} \sum_\boldsymbol{x} || \boldsymbol{y}(\boldsymbol{x}) - \boldsymbol{a} ||^2 $$ 
+# $$C(\mathrm{w}, b) = \frac{1}{2 n} \sum_\mathrm{x} || \mathrm{y}(\mathrm{x}) - \mathrm{a} ||^2 $$ 
 # where $n$ is the number of training inputs and 
-# $\boldsymbol{a} = \boldsymbol{a}(\boldsymbol{w}, \boldsymbol{x}, b)$ is the network output given $\boldsymbol{x}$. 
+# $\mathrm{a} = \mathrm{a}(\mathrm{w}, \mathrm{x}, b)$ is the network output given $\mathrm{x}$. 
 # This $C$ is a *quadratic* cost function or the *mean square error* (MSE).
 #
-# Let's consider how to minimize $C$ over $\boldsymbol{w}, b$ 
-# such that $\boldsymbol{a} \rightarrow \boldsymbol{y} \ \forall \ \boldsymbol{x}$ in the training set. 
+# Let's consider how to minimize $C$ over $\mathrm{w}, b$ 
+# such that $\mathrm{a} \rightarrow \mathrm{y} \ \forall \ \mathrm{x}$ in the training set. 
 
 #%% [markdown]
 # One technique is *gradient descent*. 
@@ -161,15 +161,15 @@ del fig
 # where $\Delta w$ is chosen to be $-\eta \nabla C$ (for some $\eta > 0$) 
 # to ensure that $\Delta C = - \eta |\nabla C |^2 \leq 0 $.
 # 
-# Thus, $\boldsymbol{w} \rightarrow \boldsymbol{w} - \eta \nabla C$ 
+# Thus, $\mathrm{w} \rightarrow \mathrm{w} - \eta \nabla C$ 
 # would allow us to iteratively approach a (local) minimum of $C$, 
 # where $\eta = \frac{\epsilon}{| \nabla C |}$ and $\epsilon$ is some small value. 
 # 
-# Problem: Computation of $C$ becomes slow if there are many $\boldsymbol{x}$.
+# Problem: Computation of $C$ becomes slow if there are many $\mathrm{x}$.
 #
 # Solution: *Stochastic gradient descent*
-# $$ \nabla C \approx \sum_{\{\boldsymbol{x}\}} \nabla C_\boldsymbol{x}$$
-# where $\{ \boldsymbol{x} \}$ is some small, randomly chosen subset of all $\boldsymbol{x}$. 
+# $$ \nabla C \approx \sum_{\{\mathrm{x}\}} \nabla C_\mathrm{x}$$
+# where $\{ \mathrm{x} \}$ is some small, randomly chosen subset of all $\mathrm{x}$. 
 
 #%% [markdown]
 # # Implementing network to classify the MNIST digits
@@ -263,7 +263,43 @@ del ax
 fig = None
 del fig
 
-#%%
+#%% [markdown]
+# Define `Network` class with list `sizes`,
+# where a neural network with 2, 3, 1 neurons in the 1st, 2nd, and 3rd layers 
+# is specified by `sizes = [2, 3, 1]`.
+# The weights and biases are initialized to random values (Gaussian, mean $0$ and std dev $1$). 
+# 
+# `net.weights[0]` specifies the weights $\mathrm{w}$ connecting the neurons of the 1st and 2nd layers;  
+# `net.biases[0]`, the biases $\mathrm{b}$ of the neurons in the 2nd layer.
+
+class Network(object):
+    def __init__(self, sizes): 
+        self.num_layers = len(sizes)
+        self.sizes = sizes
+        self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
+        self.weights = [np.random.randn(y, x) for x, y in zip(sizes[:-1], sizes[1:])]
+
+#%% [markdown]
+# Let's use $w_{jk}$ to denote the weight for the connection 
+# between the $k$th neuron of the 2nd layer and the $j$th neuron of the 3rd layer. 
+# Then, the vector of activations of the 3rd layer is given by  
+# $$ \mathrm{a}' = \sigma(\mathrm{W} \mathrm{a} + \mathrm{b})$$ 
+# where $\mathrm{a}, \mathrm{b}$ is the vector of activations and biases of the 2nd layer, 
+# $(\mathrm{W})_{jk} = w_{jk}$ is the weight matrix, and $\sigma(z)$ is the activation function. 
+
+def sigmoid(z):
+    return 1.0/(1.0 + np.exp(-z))
+
+# Let's define a `feedforward` method to the `Network` class to compute the output 
+# given an input.
+
+def feedforward(self, a):
+    """Return the output of the network if "a" is input."""
+    for b, w in zip(self.biases, self.weights):
+        a = sigmoid(np.dot(w, a) + b)
+    return a
+
+
 
 
 #%%
