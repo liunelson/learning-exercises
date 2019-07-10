@@ -174,7 +174,6 @@ del fig
 #%% [markdown]
 # # Implementing network to classify the MNIST digits
 
-
 #%%
 # Import data
 %reset
@@ -218,15 +217,15 @@ numCol = int.from_bytes(train_img_data[12:(12+4)], byteorder = 'big', signed = F
 
 # Image data
 numPix = numRow*numCol
-train_img = -1*np.ones((50000, numPix))
-valid_img = -1*np.ones((10000, numPix))
+train_img = -1*np.ones((5000, numPix))
+valid_img = -1*np.ones((1000, numPix))
 k = 0
-for i in range(50000):
+for i in range(5000):
     for j in range(numPix):
         train_img[i, j] = train_img_data[i*(numPix) + j + 16]
         k = k + 1
 
-for i in range(10000):
+for i in range(1000):
     for j in range(numPix):
         valid_img[i, j] = train_img_data[i*(numPix) + j + 16 + k]
 
@@ -234,8 +233,8 @@ train_img_data = None
 del train_img_data
 
 # Label data
-valid_lab = train_lab[50000:60000]
-train_lab = train_lab[0:50000]
+valid_lab = train_lab[5000:6000]
+train_lab = train_lab[0:5000]
 
 #%%
 fig = plt.figure(1)
@@ -286,12 +285,12 @@ class Network(object):
 # $$ \mathbf{a}' = \sigma(\mathbf{W} \mathbf{a} + \mathbf{b})$$ 
 # where $\mathbf{a}, \mathbf{b}$ is the vector of activations and biases of the 2nd layer, 
 # $(\mathbf{W})_{jk} = w_{jk}$ is the weight matrix, and $\sigma(z)$ is the activation function. 
+#
+# Let's then add a `feedforward` method to the `Network` class to compute the output when 
+# given an input.
 
 def sigmoid(z):
     return 1.0/(1.0 + np.exp(-z))
-
-# Let's add a `feedforward` method to the `Network` class to compute the output when 
-# given an input.
 
 def feedforward(self, a):
     """Return the output of the network if "a" is input."""
@@ -299,5 +298,75 @@ def feedforward(self, a):
         a = sigmoid(np.dot(w, a) + b)
     return a
 Network.feedforward = feedforward
+
+#%% [markdown]
+# Now add an stochastic gradient descent (`SGD`) method to `Network` 
+# for it to learn. 
+
+import random
+
+def SGD(self, train_data, epochs, mini_batch_size, eta, test_data = None): 
+    """
+    Train the neural network using mini-batch stochastic gradient descent (SGD). 
+
+    train_data -- a list of tuples (x, y) representing the training inputs and the desired outputs. 
+    epochs -- number of epochs to train for
+    mini_batch_size -- size of mini-batches to use for sampling
+    eta -- learning rate
+
+    If 'test_data' is provided, then it will be evaluated by the network 
+    after each epoch and partial progress will be printed out 
+    (useful for tracking progress but slow).
+    """
+    if test_data: 
+        n_test = len(test_data)
+
+    n = len(train_data)
+    for j in range(epochs): 
+        
+        random.shuffle(train_data)
+        
+        mini_batches = [
+            train_data[k:(k + mini_batch_size)] for k in range(0, n, mini_batch_size)
+            ]
+
+        for mini_batch in mini_batches:
+            self.update_mini_batch(mini_batch, eta)
+        
+        if test_data: 
+            print("Epoch {0}: {1} / {2}".format(j, self.evaluate(test_data), n_test))
+        else: 
+            print("Epoch {0} complete".format(j))
+
+Network.SGD = SGD
+
+#%% [markdown]
+# A function for updating the network weights and biases after each iteration of SGD
+
+def update_mini_batch(self, mini_batch, eta):
+    """
+    Update the network weights and biases after iteration of stochastic gradient descent (SGD). 
+    
+    mini_batch --- list of tuples
+    eta --- learning rate
+    """
+    nabla_b = [np.zeros(b.shape) for b in self.biases]
+    nabla_w = [np.zeros(w.shape) for w in self.weights]
+    for x, y in mini_batch: 
+        delta_nabla_b, delta_nabla_w = self.backprop(x, y)
+        nabla_b = [nb + dnb for nb, dnb in zip(nabla_b, delta_nabla_b)]
+        nabla_w = [nw + dnw for nw, dnw in zip(nabla_w, delta_nabla_w)]
+    
+    self.weights = [w - (eta / len(mini_batch))*nw for w, nw in zip(self.weights, nabla_w)]
+
+    self.biases = [b - (eta / len(mini_batch))*nb for b, nb in zip(self.biases, nabla_b)]
+
+Network.update_mini_batch = update_mini_batch
+
+
+
+
+
+
 
 #%%
