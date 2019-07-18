@@ -2,8 +2,6 @@
 # # Notes and exercises from [Nielsen2015](http://neuralnetworksanddeeplearning.com/)
 # --- 
 
-%reset
-
 #%% [markdown]
 # ## Ch. 1.1 - Perceptrons
 # 
@@ -73,7 +71,7 @@ plt.show()
 # | `t10k-labels-idx1-ubyte.gz` | test set labels | $4542$ bytes |
 
 # Unzip and read test labels
-%reset
+
 import gzip 
 with gzip.open('E:/Documents/Projects/learning-exercises/datasets/MNIST/t10k-labels-idx1-ubyte.gz', 'rb') as hFile:
     t10k_lab_data = hFile.read()
@@ -122,7 +120,6 @@ for i in range(t10k_num):
 # Delete bin data
 t10k_img_data = None
 del t10k_img_data
-
 
 #%%
 fig = plt.figure(1)
@@ -176,7 +173,6 @@ del fig
 
 #%%
 # Import data
-%reset
 import gzip 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -217,15 +213,15 @@ numCol = int.from_bytes(train_img_data[12:(12+4)], byteorder = 'big', signed = F
 
 # Image data
 numPix = numRow*numCol
-train_img = -1*np.ones((5000, numPix))
-valid_img = -1*np.ones((1000, numPix))
+train_img = -1*np.ones((50000, numPix))
+valid_img = -1*np.ones((10000, numPix))
 k = 0
-for i in range(5000):
+for i in range(50000):
     for j in range(numPix):
         train_img[i, j] = train_img_data[i*(numPix) + j + 16]
         k = k + 1
 
-for i in range(1000):
+for i in range(10000):
     for j in range(numPix):
         valid_img[i, j] = train_img_data[i*(numPix) + j + 16 + k]
 
@@ -233,8 +229,8 @@ train_img_data = None
 del train_img_data
 
 # Label data
-valid_lab = train_lab[5000:6000]
-train_lab = train_lab[0:5000]
+valid_lab = train_lab[50000:60000]
+train_lab = train_lab[0:50000]
 
 #%%
 fig = plt.figure(1)
@@ -351,6 +347,11 @@ def update_mini_batch(self, mini_batch, eta):
     nabla_b = [np.zeros(b.shape) for b in self.biases]
     nabla_w = [np.zeros(w.shape) for w in self.weights]
     for x, y in mini_batch: 
+
+        # Different data definition
+        x = x[..., None]
+        y = y[..., None]
+
         delta_nabla_b, delta_nabla_w = self.backprop(x, y)
         nabla_b = [nb + dnb for nb, dnb in zip(nabla_b, delta_nabla_b)]
         nabla_w = [nw + dnw for nw, dnw in zip(nabla_w, delta_nabla_w)]
@@ -367,7 +368,7 @@ Network.update_mini_batch = update_mini_batch
 # Let's add the other helper functions:
 
 # Backpropagation
-def backprop(x, y):
+def backprop(self, x, y):
     """
     Return a tuple (nabla_a, nabla_w) representing the gradient of the cost function C_x, 
     where nabla_a and nabla_w are layer-by-layer lists of numpy arrays 
@@ -387,18 +388,19 @@ def backprop(x, y):
         activations.append(activation)
 
     # Backward pass
-    delta = self.cost_derivation(activations[-1], y) * sigmoid_prime(za[-1])
+    delta = self.cost_derivative(activations[-1], y) * sigmoid_prime(zs[-1])
+
     nabla_b[-1] = delta
     nabla_w[-1] = np.dot(delta, activations[-2].transpose())
 
     # l = 1 -- last layer of neurons
     # l = 2 -- etc.
     for l in range(2, self.num_layers):
-        z = zs[-1]
+        z = zs[-l]
         sp = sigmoid_prime(z)
         delta = np.dot(self.weights[-l + 1].transpose(), delta) * sp
-        nabla_b[-1] = delta
-        nabla_w[-1] = np.dot(delta, activations[-l - 1].transpose())
+        nabla_b[-l] = delta
+        nabla_w[-l] = np.dot(delta, activations[-l - 1].transpose())
     
     return (nabla_b, nabla_w)
 
@@ -408,7 +410,21 @@ def evaluate(self, test_data):
     Return the number of test inputs for which the network outputs the correct results 
     (output = index of node with high activation).
     """
-    test_results = [(np.argmax(self.feedforward(x)), y) for (x, y) in test_data]
+    #test_results = [(np.argmax(self.feedforward(x)), y) for (x, y) in test_data]
+
+    test_results = []
+    for i in range(len(test_data)):
+
+        (x, y) = test_data[i]
+
+        # Different data definition
+        x = x[..., None]
+        y = y[..., None]
+
+        x = np.argmax(self.feedforward(x))
+        y = np.argmax(y)
+
+        test_results.append((x, y))
 
     return sum(int(x == y) for (x, y) in test_results)
 
@@ -448,8 +464,22 @@ valid_lab_ = None
 del valid_lab_
 
 #%% [markdown]
-# Training time:
-net = Network([784, 20, 10])
-net.SGD(train_data, 20, 10, 3.0, valid_data)
+# Training:
+
+net = Network([784, 30, 10])
+net.SGD(train_data, 10, 10, 3.0, test_data = valid_data)
+
+#%% [markdown]
+# ---
+# Try with code from [MichalDanielDobrzanski](https://github.com/MichalDanielDobrzanski/DeepLearningPython35)
+%reset?
+import mnist_loader
+train_data, valid_data, test_data = mnist_loader.load_data_wrapper()
+
+#%%
+import network
+net = network.Network([784, 30, 10])
+net.SGD(train_data, 5, 10, 3.0, test_data = test_data)
+
 
 #%%
