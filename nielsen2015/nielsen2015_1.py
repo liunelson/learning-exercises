@@ -3,7 +3,9 @@
 # --- 
 
 #%% [markdown]
-# ## Ch. 1.1 - Perceptrons
+# ## Ch. 1 Neural Nets
+#
+# ## Sec. 1.1 - Perceptrons
 # 
 # $ y = 
 #   \begin{cases} 
@@ -20,7 +22,7 @@
 # and perform any basic computation.
 
 #%% [markdown]
-# ## Ch. 1.2 - Logistic/Sigmoid Neurons
+# ## Sec. 1.2 - Logistic/Sigmoid Neurons
 # 
 # To optimize $w_i$, the output $y$ should be defined by 
 # a differentiable *transfer* or *activation* function. 
@@ -47,7 +49,7 @@ plt.grid(True)
 plt.show()
 
 #%% [markdown]
-# ## Ch. 1.3 - Architecture of Neural Networks
+# ## Sec. 1.3 - Architecture of Neural Networks
 # 
 # Layers: *input*, *hidden*, and *output*. 
 #
@@ -55,7 +57,7 @@ plt.show()
 # *Recurrent* neural networks: feedback loops allowed.
 
 #%% [markdown]
-# ## Ch. 1.4 - Simple Network to Classify Handwritten Digits
+# ## Sec. 1.4 - Simple Network to Classify Handwritten Digits
 #
 # Read handwritten digits = *segmentation* + *classification*.
 # 
@@ -464,8 +466,7 @@ valid_lab_ = None
 del valid_lab_
 
 #%% [markdown]
-# Training:
-
+# Training: 
 net = Network([784, 30, 10])
 net.SGD(train_data, 10, 10, 3.0, test_data = valid_data)
 
@@ -481,5 +482,3 @@ import network
 net = network.Network([784, 30, 10])
 net.SGD(train_data, 5, 10, 3.0, test_data = test_data)
 
-
-#%%
