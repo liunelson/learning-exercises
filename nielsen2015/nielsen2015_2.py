@@ -98,11 +98,30 @@
 #%% [markdown]
 # ## Sec. 2.5 The Backpropagation Algorithm
 # 
-# 1. Input $\mathbf{x}$ and set $\mathbf{a}^1 = \sigma(\mathbf{x})$ 
+# 1. Input $\mathbf{x}$ and set $\mathbf{a}_1 = \sigma(\mathbf{x})$ 
 # 2. Feedforward: $\mathbf{z}_k = \mathbf{W}_k \mathbf{a}_{k-1} + \mathbf{b}_k$ and $\mathbf{a}_k = \sigma(\mathbf{z}_k)$
-# 3. Output error $\mathbf{\delta}_N = \nabla_{\mathbf{a}_N} \odot \sigma^\prime(\mathbf{z}_N)$
+# 3. Output error $\mathbf{\delta}_N = \nabla_{\mathbf{a}_N} C \odot \sigma^\prime(\mathbf{z}_N)$
 # 4. Backpropagate: $\mathbf{\delta}_k = \left( W_{k+1}^\mathsf{T} \mathbf{\delta}_{k+1} \right) \odot \sigma^\prime(\mathbf{z}_k)$
-# 5. Output: $\frac{\partial C}{\partial w_{ij}^k} = \delta_i^k a_j^{k-1}$ and $\frac{\partial C}{\partial b_i^k} = \delta_i^k$
-
+# 5. Output: $\frac{\partial C}{\partial w_{ij}^k} = \delta_i^k a_j^{k-1}$
+#   and $\frac{\partial C}{\partial b_i^k} = \delta_i^k$ 
+#
+#
+# Combine this with stochastic gradient descent:
+#
+# 1. Input is a mini-batch of M training examples: $\mathbf{X} = \{ \mathbf{x}_1, \ldots, \mathbf{x}_M \}$
+# 2. For each $\mathbf{x}_m$, apply the backprop. algorithm (steps 1 to 5)
+# 3. Update weights and biases: 
+#   $\mathbf{W}_k \rightarrow \mathbf{W}_k - \frac{\eta}{M} \sum\limits_m \mathbf{\delta}_k(\mathbf{x}_m) \otimes \mathbf{a}_{k-1}(\mathbf{x}_m)$
+#   and 
+#   $\mathbf{b}_k \rightarrow \mathbf{b}_k - \frac{\eta}{M} \sum\limits_m \mathbf{\delta}_k (\mathbf{x}_m)$
+#
+# Note that one use matrix notation to do all the $\mathbf{x}_m$ at once: 
+#
+# $ \begin{equation}
+#   \mathbf{X} = [ \mathbf{x}_1 \ldots \mathbf{x}_M] \\
+#   \mathbf{A}_1 = \sigma(\mathbf{X}) \\
+#   \mathbf{Z}_k = \mathbf{W}_k \mathbf{A}_{k-1} + \mathbf{B}_k \\
+#   \mathbf{\Sigma}_N = \nabla_{\mathbf{a}_N}C(\mathbf{A}_N) \odot \sigma^\prime(\mathbf{Z}_N)
+# \end{equation} $
 
 #%%
