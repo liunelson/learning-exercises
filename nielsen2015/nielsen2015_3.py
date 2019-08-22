@@ -154,6 +154,70 @@ plt.show()
 # Heuristically, unregularized cost functions causes the weight vector $\mathbf{w}$ 
 # to become longer and longer ($|\mathbf{w}|$ large) and thus stuck pointing in the same direction, 
 # i.e. the network becomes stuck in local minima and stops learning. 
+#
+# Other regularization techniques:
+# * $L^1$ regularization, $C = C_0 + \frac{\lambda}{n} \sum\limits_w |w|$
+# * *Dropout*, randomly drop out neurons in the hidden layer during the forward and backward propagation step.
+# * Create more training examples, e.g. rotate/skew/translate each MNIST image.
+
+
+#%% [markdown]
+# ## Sec. 3.5 Weight Initialization
+#
+# If $w$ and $b$ are initialized to random Gaussian values 
+# (mean of 0 and standard deviation of 1), 
+# then $z$ has standard deviation of $\sim \sqrt{N_k + 1}$, 
+# where $N_k$ is the number of neurons in the layer. 
+#
+# Since $\sigma^\prime(z) \approx 0$ for large values of $z$, 
+# the network will learn very slowly as a result.
+# 
+# Regularization of the cost function only fixes the problem of saturated neurons 
+# in the output layer, not in the *hidden* one.
+# 
+# Solution: initialize $w$ to random Gaussian values with mean of 0 
+# and standard deviation of $1/\sqrt{N_k}$; $b$ can be initialized to 0.
+
+#%% [markdown]
+#
+# ## Sec. 3.6 Choosing the Hyperparameters
+#
+# In the MNIST problem here, there are several hyperparameters: 
+# learning rate $\eta$, number of hidden layers, number of neurons, regularization parameter $\lambda$, 
+# number of training epoch, number of images in training/validation/test datasets, 
+# batch size for stochastic averaging.
+#
+# Optimization is achieved by manual search, *grid search*, etc.
+
+#%% [markdown]
+#
+# ## Sec. 3.7 Other Techniques
+#
+# ### Variations on stochastic gradient descent:
+# 
+# *Hessian technique*:
+#
+# $C(\mathbf{w} + \mathbf{\delta w}) = C(\mathbf{w}) + \sum\limits_i \frac{\partial C}{\partial w_i} \Delta w_i + \frac{1}{2} \sum\limits_{i,j} \Delta w_i \frac{\partial^2 C}{\partial w_i \partial w_j} \Delta w_j + \mathcal{O}(\Delta w^3)$
+#
+# $C(\mathbf{w} + \mathbf{\delta w}) \approx C(\mathbf{w}) + \nabla C \cdot \mathbf{\Delta w} + \frac{1}{2} \mathbf{\Delta w}^\mathsf{T} \mathbf{H} \, \mathbf{\Delta w}$
+#
+# To ensure $C(\mathbf{w})$ decreases, set $\mathbf{\delta w} = -\mathbf{H}^{-1} \nabla C$ 
+# such that $\mathbf{w} \rightarrow \mathbf{w}^\prime = \mathbf{w} + \eta \, \mathbf{\delta w}$ 
+#
+# *Momentum-based gradient descent*:
+#
+# Introduce a new hyperparameter $\mu$ (the *momentum coefficient* but acts like friction) 
+# in gradient descent rules to prevent overshooting,
+#
+# $v \rightarrow v^\prime = \mu v - \eta \, \nabla C$ 
+# 
+# $w \rightarrow w^\prime = w + v^\prime$
+#
+# ### Other models of artificial neurons
+#
+# *Hyperbolic tangent*, *rectified linear* function, 
+
+
 
 
 #%%
