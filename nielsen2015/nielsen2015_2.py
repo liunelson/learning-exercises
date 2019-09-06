@@ -55,7 +55,9 @@
 # 
 # Define $\delta_i^k = \frac{\partial C}{\partial {z_i^k}}$ as *error* in the $i^\mathrm{th}$ neuron 
 # of the $k^\mathrm{th}$ layer. 
+#
 # ---
+#
 # **Equation 1**: 
 #
 # $ \begin{equation}
@@ -64,7 +66,9 @@
 # \end{equation} $
 # 
 # where $\nabla_{\mathbf{a}_N} C = \mathbf{a}_N - \mathbf{y} $ and $\sigma^\prime(z) = \frac{\mathrm{d} \sigma}{\mathrm{d} z}$.
+#
 # ---
+#
 # **Equation 2**:
 #
 # $ \begin{equation}
@@ -73,19 +77,25 @@
 # \end{equation} $
 #  
 # where the error propagates backwards from the output layer.
+#
 # ---
+#
 # **Equation 3**: 
 #
 # $ \begin{equation}
 #   \frac{\partial C}{\partial b_i^k} = \delta_i^k
 # \end{equation} $
+#
 # ---
+#
 # **Equation 4**:
 #
 # $ \begin{equation}
 #   \frac{\partial C}{\partial w_{ij}^k} = \delta_i^k a_j^{k-1}
 # \end{equation} $
+#
 # ---
+#
 # Errors can be calculated by propagating Eq. 1 backwards with Eq. 2. 
 # 
 # Since $\sigma^\prime(z) \sim \mathrm{e}^{-z^2}$, 
