@@ -85,6 +85,47 @@
 # Training is done as previously, using stochastic gradient descent   
 # and backpropagation.
 #  
-#  
+
+#%% [markdown]
+# ### Sec. 6.2 Suggestions
+#
+# *Rectifield Linear Units*: 
+# Use ReLUs ($\sigma(z) = \max(0, z)$) instead of 
+# sigmoid (or tanh) activation units. 
+# It is empirically shown to improve performance of CNNs. 
+#
+# *Expanded Training Dataset*: 
+# Generate additional training examples by distorting existing ones, 
+# through translation, rotation, skewing, and *elastic distortion* 
+# (see [Simard, SteinKraus, and Platt](https://ieeexplore.ieee.org/document/1227801)).
+#
+# *Dropout*: 
+# Randomly drop out activation units in the fully-connected layer 
+# to prevent co-adaption amongst all units. 
+# Not necessary for the convolutional layers.
+#
+# *Ensemble of Networks*: 
+# Train multiple neural networks which have different random seeds  
+# (in the initialization and dropout steps) 
+# and use the ensemble average output.
 # 
 
+#%% [markdown]
+# ### Sec. 6.3 Other Approaches
+# 
+# *Recurrent Neural Networks* (RNNs): 
+# An unit's activation may depend on both the activation 
+# of units in the previous layer and its own activation 
+# at an earlier time.
+# 
+# *Long Short-Term Memory Units* (LSTMs): 
+# Deep RNNs are difficult to train due to the 'unstable gradient' problem 
+# (backpropagation through layers *and* time); 
+# a solution is to include LSTMs into the network. 
+#
+# *Deep Belief Networks* (DBNs):
+# DBNs are an example of a *generative* model, 
+# wherein an output is specified and an input is generated;  
+# they can also do unsupervised and semi-supervised learning; 
+# currently unpopular.
+# 
