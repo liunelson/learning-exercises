@@ -183,11 +183,122 @@ def try_cwt(data, w):
 
 try_cwt(data_2[0], 450)
 
+#%% [markdown]
+# Since no substrate TA dataset is available, 
+# GVD correction is not readily feasible for most of the datasets. 
+# 
+# Let's consider just the long-time datasets, i.e. `data_4`, `data_5`.
 
-#%%
+def svd_scan(data):
+
+    # Break out variables
+    wave = data['wave']
+    time = data['time'] - data['time'][0]
+    data = data['abs']
+
+    # Trim NaN out
+    no_nan = True
+    i = data.sum(axis = 1)
+    if no_nan:
+        w = ~np.isnan(i)
+    else: 
+        w = np.ones(wave.shape, dtype = bool)
+    w1 = (np.where(w))[0][0]
+    w2 = (np.where(w))[0][-1]
+    wave = wave[w1:w2]
+    data = data[w1:w2, :]
+
+    # Remove pump scatter
+    pump = (data[:, 0:5]).mean(axis = 1)
+    data_pump = np.add(data, -pump[:, np.newaxis])
+    pump_ = data_pump.mean(axis = 1)
+
+    fig, ax = plt.subplots(nrows = 1, ncols = 1, figsize = [8, 4])
+    fig.suptitle('Pump Scatter Spectrum')
+    ax.plot(wave, 1000*pump, color = 'tab:blue')
+    ax.tick_params(direction = 'in', top = True, right = True)
+    ax.tick_params(axis = 'y', color = 'tab:blue', labelcolor = 'tab:blue')
+    ax.set_xlim([wave[0], wave[-1]])
+    ax.set_xlabel('Wavelength (nm)')
+    ax.set_ylabel('ΔA (mOD)')
+    ax_ = ax.twinx()
+    ax_.plot(wave, 1000*pump_, color = 'tab:red')
+    ax_.tick_params(axis = 'y', direction = 'in', color = 'tab:red', labelcolor = 'tab:red')
+    # w = np.argmin(pump)
+    # ax[1].plot(time, data[w, :])
+    # ax[1].tick_params(direction = 'in', top = True, right = True)
+    # ax[1].set_xlabel('Time Delay (ps)')
+    # ax[1].tick_params(labelleft = False)
+    # ax[1].set_ylim(ax[0].get_ylim())
+
+
+    # Trim pump scatter region
+    w = np.argmin(np.abs(wave - 410))
+    wave = wave[w:]
+    data_pump = data_pump[w:, :]
+
+    # Trim CPM region
+    t = np.argmin(np.abs(time - 8))
+    time = time[t:]
+    data_pump = data_pump[:, t:]
+
+    # SVD
+    U, S, Vh = np.linalg.svd(data_pump, full_matrices = False)
+    i = [0, 1, 2]
+    U[:, i] = -U[:, i]
+    Vh[i, :] = -Vh[i, :]
+
+    fig, ax = plt.subplots(nrows = 1, ncols = 3, figsize = [8, 4])
+    ax[0].set_ylim([wave[-1], wave[0]])
+    ax[0].set_xlabel('ΔA (a.u.)')
+    ax[0].set_ylabel('Wavelength (nm)')
+    ax[0].set_title('U')
+    ax[1].plot(np.arange(1, S.shape[0] + 1), S, color = 'tab:blue')
+    ax[1].set_yscale('log')
+    ax[1].set_xscale('log')
+    ax[1].set_title('S')
+    ax[2].set_xlabel('Time Delay (ps)')
+    ax[2].set_ylabel('ΔA (a.u.)')
+    ax[2].set_title('V')
+    for i in range(2):
+        ax[i].tick_params(direction = 'in', top = True, right = True)
+        ax[i].grid(True)
+
+    for i in range(3):
+        ax[0].plot(U[:, i], wave, color = 'C' + str(i))
+        ax[1].plot(i + 1, S[i], marker = 'o', color = 'C' + str(i))
+        ax[2].plot(time, (Vh[i, :]).T)
+        
+
+    fig.tight_layout()
+
+
+    # Low-rank approximation
+    j = [0, 1]
+    data_svd = np.dot(U[:, j], np.dot(np.diag(S[j]), Vh[j, :]))
+
+    fig, ax = plt.subplots(nrows = 3, ncols = 1, figsize = [8, 8])
+    ext = [time[0], time[-1], wave[-1], wave[0]]
+    img = ax[0].imshow(1000*data_pump, extent = ext, vmin = -15, vmax = 15, cmap = 'RdBu_r', aspect = 'auto', interpolation = None)
+    img = ax[1].imshow(1000*data_svd, extent = ext, vmin = -15, vmax = 15, cmap = 'RdBu_r', aspect = 'auto', interpolation = None)
+    img = ax[2].imshow(10*1000*(data_pump - data_svd), extent = ext, vmin = -15, vmax = 15, cmap = 'RdBu_r', aspect = 'auto', interpolation = None)
+    for i in range(3):
+        ax[i].tick_params(direction = 'in', top = True, right = True)
+
+        if i != 2:
+            ax[i].tick_params(labelbottom = False)
+
+    ax[2].set_xlabel('Time Delay (ps)')
+    ax[1].set_ylabel('Wavelength (nm)')
+    ax[0].set_title('Trimmed Data')
+    ax[1].set_title('Low-Rank Data (' + str(j[0]) + '-' + str(j[-1]) + ')')
+    ax[2].set_title('Residuals (x 10)')
+    cb = fig.colorbar(img, ax = ax, orientation = 'vertical', fraction = 0.1)
+    cb.ax.tick_params(direction = 'in')
+    cb.ax.set_title('ΔA (mOD)', fontsize = 10)
 
 
 
-
+svd_scan(data_4[0])
 
 #%%

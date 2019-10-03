@@ -132,4 +132,4 @@ def plot_scan(data_plot, no_nan = False, vmin_max = 15, filename = None):
 
     # Export figure
     if isinstance(filename, str):
-        fig.savefig(filename, dpi = 300, facecolor = 'k')
+        fig.savefig(filename, dpi = 300)
