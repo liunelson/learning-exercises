@@ -142,6 +142,60 @@
 #%% [markdown]
 # ## [Independent Events](https://www.statlect.com/fundamentals-of-probability/independent-events)
 #
+# Two events $E, F$ are *independent* 
+# if and only if $P(E \cap F) = P(E)P(F)$.
+# 
+# i.e. Two events are independent if the occurrence of either makes 
+# neither more nor less probable.
+#
+# Corollary: $P(F|E) = P(F)$ and $P(E|F) = P(E)$.
+# 
+# Let $E_1, \ldots, E_n$ be $n$ events. 
+# They are *jointly/mutually* independent if and only if 
+# 
+# $P\left( \bigcap\limits_{j = 1}^k E_{i_j} \right) = \prod\limits_{j = 1}^k P(E_{i_j})$
+# 
+# for any sub-collection of $k \leq n$ events $E_{i_1}, \ldots, E_{i_k}$.
+# 
+# Note: 
+# Even if $E_i$ is independent of $E_j$ for any $i \neq j$, 
+# they are *not* altogether jointly independent.
+# However, the *converse is true*.
+#
+# ### Example
+# 
+# Consider an urn with 4 labeled balls $B_1, B_2, B_3, B_4$ 
+# which are drawn at random.
+# 
+# Define 3 events: 
+# $\begin{align} E = \{B_1,B_2\} \\ E = \{B_2,B_3\} \\ E = \{B_2,B_4\}\end{align}$
+# 
+# It follows that all the pairs of events are independent: 
+#
+# $\begin{align} P(E \cap F) = P(E)P(F) \\ P(E \cap G) = P(E)P(G) \\ P(F \cap G) = P(F)P(G) \end{align}$
+# 
+# However, they are not jointly independent; in fact: 
+# 
+# $P(E \cap F \cap G) \neq P(E)P(F)P(G)$
+# 
+
+#%% [markdown]
+# ## [Zero-Probability Events](https://www.statlect.com/fundamentals-of-probability/zero-probability-events)
+#
+# An event $E$ is a *zero-probability event* if and only if 
+# $P(E) = 0$.
+# 
+# Zero-probability events are *not* impossible events; 
+# they can happen all the time in models where the sample space $\Omega$ 
+# is not countable.
+# 
+# 
+# 
+# 
+#  
+
+
+
 
 
 
