@@ -61,6 +61,7 @@
 # Monotonicity of probability is equivalent to: 
 # if an event occurs less often, then its probability is smaller)
 #
+#
 # More rigorously, a *space of events* is required to be a *sigma-algebra*, 
 # i.e. have the following properties: 
 # 1. $\Omega \in \mathcal{F}$ (whole set); 
@@ -69,9 +70,91 @@
 # belonging to $\mathcal{F}$, then $\bigcup\limits_{i = 1}^\infty E_i \in \mathcal{F}$ 
 # (closure under countable union).
 # 
+#
 # Note: A subset of $\Omega$ that belongs to the sigma-algebra $\mathcal{F}$ is called *measurable*.
 
 
 #%% [markdown]
 # ## [Conditional Probability](https://www.statlect.com/fundamentals-of-probability/conditional-probability)
 #
+# Where $\Omega$ be the sample space, $P(E)$ denotes the probability of events $E \subseteq \Omega$. 
+# If there is new information — that the realized outcome will belong to some set $I \subseteq \Omega$ — 
+# then we define $P(E|I)$ as the *conditional probability* of $E$ given $I$. 
+# 
+# Definition...
+#
+# Suppose a sample space with finitely many sample points 
+# $\Omega = \{ \omega_1, \ldots, \omega_n \; | \; n \in \mathbb{N} \}$
+# with equal probability
+# $P(\{ \omega_i \}) = \frac{1}{n} \; \forall \; i \leq n$.
+# 
+# Thus, the probability of a generic event $E \subseteq \Omega$ is just 
+# $ P(E) = \frac{\mathrm{card(E)}}{\mathrm{card}(\Omega)}$
+# where $\mathrm{card(S)}$ denotes the cardinality (number of elements) 
+# of a set $S$.
+# 
+# This is just the ratio of the number of cases favourable to $E$ to 
+# the number of all possible cases.
+#
+# Given $I \subseteq \Omega$, the outcomes in $E \cap I^\complement$ are no longer possible 
+# and thus, 
+# $ P(E|I) = \frac{\mathrm{card}(E \cap I)}{\mathrm{card}(I)} = \frac{P(E \cap I)}{P(I)}$
+# 
+# e.g. In a 6-sided dice roll, $\Omega = \{ 1, \ldots, 6\}$;  
+# for the event 'any odd number', $E = \{ 1, 3, 5 \}$; 
+# given information 'a number greater than 3', $I = \{ 4, 5, 6\}$; 
+# then, $P(E|I) = \frac{P(E \cap I)}{P(I)} = \frac{P(\{5\})}{P(\{4\}) + P(\{5\}) + P(\{6\})} = \frac{1/6}{1/6 + 1/6 + 1/6} = \frac{1}{3}$
+#
+# Problem: what happens when $I$ is a zero-probability event ($P(I) = 0$)?
+# 
+# Axiomatically, conditional probability $P(E|I)$ must have the following properties: 
+# 
+# 1. $P$ is a probability measure;
+#
+# 2. certainty, $P(I|I) = 1$; 
+#
+# 3. impossibility, 
+# $P(E|I) = 0$ for any $E \subseteq I^\complement$;
+# 
+# 4. constant likelihood ratios on $I$, 
+# $\frac{P(F|I)}{P(E|I)} = \frac{P(F)}{P(E)}$ if $E \subseteq I$, $F \subseteq I$, $P(E) > 0$.
+# 
+#
+# Point 4 means that, given the same information, 
+# the ratio of the probability of two events remains the same.
+# 
+# ### Law of total probability 
+# 
+# Let $I_1, \ldots, I_n$ be $n$ events such that 
+# 
+# 1. $I_i \cap I_j = \varnothing \; \forall \; i \neq j$, 
+#  
+# 2. $\Omega = \bigcup\limits_{i = 1}^{n} I_i$, 
+#
+# 3. $P(I_i) > 0$ for any i. 
+# 
+# Such $I_i$ is a *partition* of $\Omega$ 
+# and the Law of Total Probability states that, for any event $E$, 
+# 
+# $P(E) = \sum\limits_{i = 1}^n P(E|I_i) P(I_i)$
+# 
+
+#%% [markdown]
+# ## [Independent Events](https://www.statlect.com/fundamentals-of-probability/independent-events)
+#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#%%
