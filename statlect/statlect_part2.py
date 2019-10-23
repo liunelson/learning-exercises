@@ -185,14 +185,56 @@
 # An event $E$ is a *zero-probability event* if and only if 
 # $P(E) = 0$.
 # 
-# Zero-probability events are *not* impossible events; 
+# Zero-probability events are *not* impossible events ($\varnothing$); 
 # they can happen all the time in models where the sample space $\Omega$ 
 # is not countable.
 # 
+# ### Almost Sure and Almost Surely
 # 
+# Let $\Phi$ be some property that a sample point $\omega \in \Omega$ 
+# can either satisfy or not. 
+# Let $F = \{ \omega \in \Omega \; : \; \omega \mathrm{satisfies} \Phi\}$.
 # 
+# Property $\Phi$ is said to be *almost sure* 
+# (i.e. holds either *almost surely*)
+# if there exists an event $E$ 
+# such that $P(E) = 0$ and $F^\complement \subseteq E$.
 # 
+# From the monotonicity and complement properties: 
+# - $F^\complement \subseteq E \; \Rightarrow \; 0 \leq P(F^\complement) \leq P(E) = 0$.
+# - $P(F) = 1 - P(F^\complement) = 1 - 0 = 1$
+# - An almost-sure event is one that happens with probability $1$.
+# 
+# Example: 
+#
+# 1. Consider a sample space $\Omega = [0, 1]$ 
+# with probabilities $P([a, b]) = b- a$ where $[a, b] \subseteq [0, 1]$.
+# 
+# 2. Consider the event $E = \{ \omega \in \Omega \; | \; \omega \in \mathbb{G} \}$.
 #  
+# 3. Since $E$ is a countable set, 
+# $E = \bigcup\limits_{i = 1}^\infty \{\omega_i\} \; \Rightarrow \; P(E) = \sum\limits_{i = 1}^\infty P(\{\omega_i\}) = 0$.
+# 
+# 4. Thus, $E$ is a zero-probability event.
+# 
+# 5. Corollary: the irrational set in $\Omega$ is an almost-sure event  
+# since $F = E^\complement \; \Rightarrow \; P(F) = P(E^\complement) = 1 - P(E) = 1$.
+# 
+
+#%% [markdown]
+# ## [Baye's Rule](https://www.statlect.com/fundamentals-of-probability/Bayes-rule)
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#   
 
 
 
