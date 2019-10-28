@@ -797,7 +797,7 @@ ax.legend()
 # 
 # 
 # Properties: 
-# - $\mu_X(n) = \mathrm{E}[X^n] = \frac{\mathrm{d}}{\mathrm{d}t^n}M_X(t) \Big|_{0}$ 
+# - $\mu_X(n) = \mathrm{E}[X^n] = \frac{\mathrm{d}^n}{\mathrm{d}t^n}M_X(t) \Big|_{0}$ 
 # 
 # - *Equality of distributions*: 
 # Two random variables have the same CDF/PMF/PDF if and only if they have the same MGFs for any $t$.
@@ -808,9 +808,85 @@ ax.legend()
 # ## [Characteristic Function](https://www.statlect.com/fundamentals-of-probability/characteristic-function)
 # 
 # Not all random variables possess a MFG. 
-# However, all have a *characteristic function* which has almost identical properties.
+# However, all have a *characteristic function* 
+# which has almost identical properties.
+# 
+# Definition:
+#
+# 1. Let $X$ be a random variable.
+#
+# 2. The function $\phi:\mathbb{R}\rightarrow\mathbb{C}$ 
+# defined by $\phi_X(t) = \mathrm{E}[\mathrm{e}^{\mathrm{i}tX}]$ 
+# is called the characteristic function (CF) of $X$.
 # 
 # 
+# Proposition:
 # 
+# 1. Let $X$ be a random variable and $\phi_X(t)$ its characteristic function. 
+#
+# 2. If $\phi_X(t)$ is $n$ times differentiable, 
+# 
+# 3. then $n$ is even, $\mu_X(k)$ exists and is finite for any $k \leq n$;
+# 
+# 4. then $n$ is odd, $\mu_X(k)$ exists and is finite for any $k < n$.
 # 
 #  
+# Either way, $\mu_X(k) = \mathrm{E}[X^k] = \frac{1}{\mathrm{i}^k} \frac{\mathrm{d}^k}{\mathrm{d}t^k}M_X(t) \Big|_{0}$
+# 
+# Definition: 
+# 
+# 1. Let $\boldsymbol{X}$ be a $K \times 1$ random vector. 
+# 
+# 2. The *joint* characteristic function of $X$ is 
+# a function $\phi:\mathbb{R}^K\rightarrow\mathbb{C}$ 
+# 
+# 3. defined by 
+# $\phi_X(t) = \mathrm{E}[\mathrm{e}^{\mathrm{i}t^\mathsf{T}X}] = \mathrm{E} \left[ \mathrm{e}^{\mathrm{i} \sum\limits_{j = 1}^K t_j X_j} \right]$
+
+
+# %%[markdown]
+# ## [Kullback-Leibler Divergence](https://www.statlect.com/fundamentals-of-probability/Kullback-Leibler-divergence)
+#  
+# The Kullback-Leibler divergence (KLD) is a measure of dissimilarity 
+# between two probability distributions.
+# 
+# Definition for discrete random variables:
+# 
+# 1. Let $X, Y$ be two discrete random variables with support $R_X, R_Y$
+# and PMFs $p_X(x), p_Y(y)$.
+# 
+# 2. Let $R_X \subseteq R_Y$ such that $p_X(x) \neq 0 \; \Rightarrow \; p_Y(x) \neq 0$.
+# 
+# 3. Then, the KLD of $p_Y(y)$ from $p_X(x)$ is: 
+# $D_\textrm{KL}(p_X, p_Y) = -\sum\limits_{x \in R_X} p_X(x) \ln\left(\frac{p_Y(x)}{p_X(x)}\right)$.
+# 
+# 
+# Definition for continuous random variables:
+# 
+# 1. Let $X, Y$ be two continuous random variables with support $R_X, R_Y$
+# and PDFs $f_X(x), f_Y(y)$.
+# 
+# 2. Let $R_X \subseteq R_Y$ such that $\int_A f_X(x)\mathrm{d}x \neq 0 \; \Rightarrow \; \int_A f_Y(x) \mathrm{d}x \neq 0$ 
+# for any set $A \subseteq R_X$.
+# 
+# 3. Then, the KLD of $f_Y(y)$ from $f_X(x)$ is: 
+# $D_\textrm{KL}(f_X, f_Y) = -\int\limits_{x \in R_X} f_X(x) \ln\left(\frac{f_Y(x)}{f_X(x)}\right) \mathrm{d}x$.
+# 
+# 
+# The KLD is non-negative: 
+# - if $p_X(x) = p_Y(x) \; \forall \; x \in R_X$, then $D_\textrm{KL}(p_X,p_Y) = 0$; 
+# otherwise, $D_\textrm{KL}(p_X,p_Y) > 0$.
+# - if $\int_A f_X(x)\mathrm{d}x = \int_A f_Y(x)\mathrm{d}x \; \forall \; A \subseteq R_X$, then $D_\textrm{KL}(f_X,f_Y) = 0$; 
+# otherwise, $D_\textrm{KL}(f_X,f_Y) > 0$.
+# 
+# 
+# Asymmetry: 
+# - There is no guarantee that $D_\textrm{KL}(p_X,p_Y) = D_\textrm{KL}(p_X,p_Y)$
+# - When $R_X \subset R_Y$, 
+# it is possible that $D_\textrm{KL}(p_X,p_Y) \; \exists$ 
+# but $D_\textrm{KL}(p_Y,p_X) \; \nexists$.
+# 
+# 
+#    
+
+# %%
