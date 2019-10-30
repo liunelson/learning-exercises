@@ -489,4 +489,191 @@ ax2.plot(x, CDF, color = c2)
 ax2.set_ylabel('CDF', color = c2)
 ax2.tick_params(axis = 'y', color = c2, labelcolor = c2)
 
+#%% [markdown]
+# ## F Distribution
+# 
+# Scenario: The ratio of two chi-square random variables $Y_1, Y_2$ gives a F distribution, 
+# $X = \frac{Y_1/n_1}{Y_2/n_2}$.
+# 
+# Definition: 
+# - Let $X$ be a continuous random variable with support $R_X = \mathbb{R}_+$ 
+# - $X$ has a *F* distribution with parameter $n_1,n_2 \in \mathbb{N}$ 
+# if its PDF is 
+# $f_X(x) = \begin{cases} \left( \frac{n_1}{n_2} \right)^{n_1/2} \frac{1}{B(\frac{n_1}{2}, \frac{n_2}{2})} x^{n_1/2-1} \left(1+\frac{n_1}{n_2}x \right)^{-(n_1+n_2)/2} & x \in R_X \\ 0 & \textrm{otherwise} \end{cases}$
+#  
+#
+# An F random variable can be written as a gamma random variable with parameters $n_1$ and $h_1$, 
+# where $h_1 = \frac{1}{Y}$ and $Y$ is another gamma random variable with $n_2, h_2 = 1$.
+
+# %%
+import numpy as np
+from scipy.stats import f
+import matplotlib.pyplot as plt
+
+dfn = 3
+dfd = 4
+x = np.arange(0, 5, 0.01)
+PDF = f.pdf(x, dfn, dfd)
+CDF = f.cdf(x, dfn, dfd)
+
+fig, ax1 = plt.subplots(nrows = 1, ncols = 1, figsize = (4, 3))
+c1 = 'tab:red'
+ax1.plot(x, PDF, color = c1)
+ax1.set_xlabel('x')
+ax1.set_ylabel('PDF', color = c1)
+ax1.tick_params(axis = 'y', color = c1, labelcolor = c1)
+ax1.set_title(f'F Distribution ($n_1 = {dfn}$, $n_2 = {dfd}$)')
+
+c2 = 'tab:blue'
+ax2 = ax1.twinx()
+ax2.plot(x, CDF, color = c2)
+ax2.set_ylabel('CDF', color = c2)
+ax2.tick_params(axis = 'y', color = c2, labelcolor = c2)
+
+#%% [markdown]
+# ## Beta Distribution
+# 
+# Scenario: An experiment with only two outcomes (success or failure) 
+# with probabilities $X$ and $1-X$ respectively, 
+# where $X$ has an uniform distribution (since all values in $[0, 1]$ are equally likely).
+# After $n$ repetitions with $k$ successes and $n-k$ failures, $X$ needs to be revised.
+# The conditional distribution of $X$ given $n,k$ is a *beta* distribution 
+# with parameters $k+1, n-k+1$.
+# 
+# Definition: 
+# - Let $X$ be a continuous random variable with support $R_X = [0, 1]$ 
+# - $X$ has a *beta* distribution with parameter $\alpha, \beta \in \mathbb{R}_{++}$ 
+# if its PDF is 
+# $f_X(x) = \begin{cases} \frac{1}{B(\alpha,\beta)} x^{\alpha-1} (1 - x)^{\beta-1} & x \in R_X \\ 0 & \textrm{otherwise} \end{cases}$
+# 
+# 
+# Property 1:
+# An uniform distribution on $[0,1]$ is equal to a beta distribution with $\alpha = \beta = 1$.
+#
+# Property 2: 
+# Consider a beta random variable $X$ with parameters $\alpha, \beta$. 
+# Let $Y$ be another random variable such that its conditional distribution on $X$  
+# is a binomial distribution with parameters $n, X$. 
+# Then, the conditional distribution of $X$ given $Y = y$ is a beta distribution 
+# with parameters $\alpha + y$ and $\beta + n - y$.
+# 
+# Example 1: 
+# - Suppose a factory makes items with a probability $X$ of being defective. 
+# - $\mathrm{E}[X]$ is estimated to be 4% with $\mathrm{std}[X]$ 2%.
+# - Suppose $X$ is modelled by a beta distribution.
+# - Set $\alpha, \beta$ by solving $\mathrm{E}[X] = \frac{\alpha}{\alpha + \beta} = 0.04$ 
+# and $\mathrm{var}[X] = \frac{\alpha \beta}{(\alpha+\beta+1)(\alpha+\beta)^2} = (0.02)^2$. 
+# - $\alpha = 3.8$ and $\beta = 91.2$.    
+# 
+# 
+# Example 2:
+# - Suppose new observation of $100$ items and $3$ are defective.
+# - How to update $\alpha, \beta$?
+# - From property 2, $n = 100$ and $p = X$ $\; \Rightarrow \; \alpha = \alpha + 3 = 6.8$ 
+# and $\beta = \beta + 100 - 3 = 188.2$. 
+# - New estimates, $\mathrm{E}[X] = 3.49\%$ and $\mathrm{std}[X] = 1.31\%$.
+
+# %%
+import numpy as np
+from scipy.stats import beta
+import matplotlib.pyplot as plt
+
+n = 10
+k = 4
+a = k + 1
+b = n - k + 1
+x = np.arange(0, 1, 0.01)
+PDF = beta.pdf(x, a, b)
+CDF = beta.cdf(x, a, b)
+
+fig, ax1 = plt.subplots(nrows = 1, ncols = 1, figsize = (4, 3))
+c1 = 'tab:red'
+ax1.plot(x, PDF, color = c1)
+ax1.set_xlabel('x')
+ax1.set_ylabel('PDF', color = c1)
+ax1.tick_params(axis = 'y', color = c1, labelcolor = c1)
+ax1.set_title(f'Beta Distribution ($n = {n}, k = {k} \Rightarrow a = {a}$, $b = {b}$)')
+
+c2 = 'tab:blue'
+ax2 = ax1.twinx()
+ax2.plot(x, CDF, color = c2)
+ax2.set_ylabel('CDF', color = c2)
+ax2.tick_params(axis = 'y', color = c2, labelcolor = c2)
+
+#%% [markdown]
+# ## Log-Normal Distribution
+# 
+# Scenario: A random variable has a *log-normal* distribution 
+# if its natural logarithm has a normal distribution, 
+# i.e. the exponential of a normal random variable.
+# 
+# Definition: 
+# - Let $X$ be a continuous random variable with support $R_X = \mathbb{R}_{++}$ 
+# - $X$ has a *log-normal* distribution with parameter $\mu, \sigma$ 
+# if its PDF is 
+# $f_X(x) = \begin{cases} \frac{1}{\sqrt{2 \pi} \sigma x} \mathrm{e}^{\frac{(\ln{x} - \mu)^2}{2 \sigma^2}} & x \in R_X \\ 0 & \textrm{otherwise} \end{cases}$
+# 
+#
+# Property: Let $Y$ be a normal random variable with $\mu, \sigma$. 
+# $X = \mathrm{e}^Y$ has a log-normal distribution. 
+
+# %%
+import numpy as np
+from scipy.stats import lognorm
+import matplotlib.pyplot as plt
+
+mu = 0.0
+sig = 0.5
+s = sig
+x = np.arange(0, 5, 0.01)
+PDF = lognorm.pdf(x, s)
+CDF = lognorm.cdf(x, s)
+
+fig, ax1 = plt.subplots(nrows = 1, ncols = 1, figsize = (4, 3))
+c1 = 'tab:red'
+ax1.plot(x, PDF, color = c1)
+ax1.set_xlabel('x')
+ax1.set_ylabel('PDF', color = c1)
+ax1.tick_params(axis = 'y', color = c1, labelcolor = c1)
+ax1.set_title(f'Log-Normal Distribution ($\mu = {mu}, \sigma = {sig}$)')
+
+c2 = 'tab:blue'
+ax2 = ax1.twinx()
+ax2.plot(x, CDF, color = c2)
+ax2.set_ylabel('CDF', color = c2)
+ax2.tick_params(axis = 'y', color = c2, labelcolor = c2)
+
+#%% [markdown]
+# ## Multivariate Normal Distribution
+# 
+# Scenario: Joint PDF of a random vector 
+# whose entries are mutually independent normal random variables; 
+# the converse is not necessarily true.
+# 
+# Definition: 
+# - Let $\boldsymbol{X}$ be a continuous $K \times 1$ random vector 
+# with support $R_X = \mathbb{R}^K$. 
+# - $\boldsymbol{X}$ has a *standard multivariate normal* (MVN) distribution 
+# if its PDF is 
+# $f_X(\boldsymbol{x}) = \frac{1}{(2 \pi)^{K/2}} \mathrm{e}^{-\frac{1}{2} \boldsymbol{x}^\mathsf{T} \boldsymbol{x}}$
+# 
+#
+# Property: 
+# The joint PDF can be written as $f_X(\boldsymbol{x}) = \prod\limits_{i = 1}^K f_{X_i}(x_i)$
+# where $f_{X_i}(x_i)$ is the marginal PDF of the $i$-th component.
+# 
+# Definition (General):
+# - Let $\boldsymbol{\mu}$ be a $K \times 1$ vector and $V$ a $K \times K$ symmetric and positive definite matrix. 
+# - $\boldsymbol{X}$ has a multivariate normal distribution with mean $\boldsymbol{\mu}$ 
+# and covariance $V$ if its PDF is 
+# $f_X(\boldsymbol{x}) = \frac{1}{(2 \pi)^{K/2} \sqrt{|\mathrm{det}(V)|}} \mathrm{e}^{-\frac{1}{2} (\boldsymbol{x - \mu})^\mathsf{T} V^{-1} (\boldsymbol{x - \mu})}$
+# 
+# 
+# Note that 
+# $V = \begin{bmatrix} \sigma_1^2 & 0 & \cdots & 0 \\ 0 & \sigma_2^2 & \cdots & 0 \\ \vdots & \vdots & \ddots & \vdots \\ 0 & 0 & \cdots & \sigma_K^2 \end{bmatrix}$ 
+# 
+# Property: $\boldsymbol{X} = \mu + \Sigma \boldsymbol{Z}$ where $\boldsymbol{Z}$ is the standard MVN random variable.
+#   
+
+
 # %%
