@@ -82,7 +82,7 @@ ax1.set_ylim(ax2.get_ylim())
 # 
 # The binomial CDF: $F_X(x) = \begin{cases} 0 & x < 0 \\ \sum\limits_{s=0}^{\lfloor x \rfloor} \binom{n}{s} p^s (1-p)^{n-s} & 0 \leq x \leq n \\ 1 & x > n \end{cases}$
 # 
-# Note: A $binomial$ random variable is a sum of $n$ jointly independent Bernoulli random variables. 
+# Note: A binomial random variable is a sum of $n$ jointly independent Bernoulli random variables. 
 
 # %%
 import numpy as np
@@ -121,7 +121,7 @@ ax1.plot(x, PMF, marker = 'o', color = c1, linestyle = 'none')
 ax1.set_xlabel('x')
 ax1.set_ylabel('PMF', color = c1)
 ax1.tick_params(axis = 'y', color = c1, labelcolor = c1)
-ax1.set_title(f'Binomial Distribution ($n = {int(0.5*n)}$, $p = {p}$)')
+ax1.set_title(f'Binomial Distribution ($n = {int(n)}$, $p = {p}$)')
 
 c2 = 'tab:blue'
 ax2 = ax1.twinx()
