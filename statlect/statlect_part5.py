@@ -1244,8 +1244,82 @@
 # 4. The posterior marginal distribution of $\theta$: 
 # $p(\theta|x) = \int p(\phi\theta|x) \mathrm{d}\phi$.
 # 
+  
+# %% [markdown]
+# ### Bayesian Estimation of the Parameters of a Normal Distribution
+# 
+# Case: *unknown* mean $\mu$ and *known* variance $\sigma^2$.
+# - Suppose a sample $x = [x_1 \; \ldots \; x_n]$.
+# - $x_i$ are drawn IID from a normal distribution.
+# - The likelihood is $p(x_i|\mu) = N(\mu, \sigma^2)$ 
+# and $p(x|\mu) = \prod\limits_{i=1}^n p(x_i|\mu)$.
+# - The prior is $p(\mu) = N(\mu_0, \tau_0^2)$.
+# - To calculate the posterior is $p(\mu|x)$, 
+#   1. Write $p(x,\mu) = p(x|\mu) p(\mu) = \ldots = h(x) g(\mu,x)$
+#   2. By factorization, $p(x) = h(x)$ and $p(\mu|x) = g(\mu, x)$.
+# - Thus, the posterior $p(\mu|x)$ is just $N(\mu_n, \sigma_n^2)$.
+# - The prior predictive distribution $p(x)$ is 
+# $N(\mu_0 i, \sigma^2 I_n + \tau_0^2 ii^\mathsf{T})$.
+# - The posterior predictive distribution $p(\tilde{x}|x)$ 
+# can be calculated too ($\tilde{x} = [x_{n+1} \; \ldots \; x_{n+m}]$).
 # 
 # 
+# Case: *unknown* mean $\mu$ and *unknown* variance $\sigma^2$.  
+# - The prior is hierarchical.
+# - See example in previous subsection.
+
+# %% [markdown]
+# ### Bayesian Linear Regression
 # 
-#    
+# Recall the normal linear regression model:
+# - $y = X\beta + \epsilon$;
+# - $y$ is the $N \times 1$ vector of observations of the dependent variable;
+# - $X$ is the $N \times K$ matrix of regressors (full rank);
+# - $\beta$ is the $K \times 1$ vector of regression coefficients;
+# - $\epsilon$ is the $N \times 1$ vector of errors 
+# (multivariate normal distribution conditional on $X$ with mean $0$ 
+# and covariance matrix $\sigma^2 I_N$)
+# 
+# 
+# Case: *unknown* $\beta$ and *known* variance $\sigma^2$.
+# - Since $\epsilon$ is multivariate normal and $y$ is a linear transformation of it, 
+# $y$ is also multivariate normal;
+# - the likelihood is then $p(y|\beta,X) = (2 \pi)^{N/2} |\mathrm{det}(\sigma^2 I_N)|^{-1/2} \exp \left(-\frac{1}{2} (y - X\beta)^\mathsf{T} (\sigma^2 I_N)^{-1} (y - X \beta) \right)$
+# - assume the prior on $\beta$ to be multivariate normal; 
+# - with mean $\beta_0$ and covariance $\sigma^2 V_0$, $V_0$ is some $K\times K$ symmetric positive definite matrix; 
+# - $p(\beta) = (2 \pi)^{N/2} |\mathrm{det}(\sigma^2 V_0)|^{-1/2} \exp \left(-\frac{1}{2} (\beta - \beta_0)^\mathsf{T} (\sigma^2 V_0)^{-1} (\beta - \beta_0) \right)$
+# - Apply factorization to get $p(\beta|y,X)$...   
+# - $p(\beta|y,X) = \ldots =  (2 \pi)^{K/2} |\mathrm{det}(\sigma^2 V_N)|^{-1/2} \exp \left(-\frac{1}{2} (\beta - \beta_N)^\mathsf{T} (\sigma^2 V_N)^{-1} (\beta - \beta_N) \right)$
+# - where $V_N = (V_0^{-1} + X^\mathsf{T} X)^{-1}$;
+# - where $\beta_N = V_N [V_0^{-1} \beta_0 + X^\mathsf{T} y]$;
+# - the posterior of $\beta$ is multivariate normal with mean $\beta_N$ and covariance $\sigma^2 V_N$;
+# - recall from OLS, $\beta_\textrm{OLS} = (X^\mathsf{T} X)^{-1} X^\mathsf{T} y$ 
+# - then, $\beta_N = \ldots = V_N [V_0^{-1} \beta_0 + X^\mathsf{T} X \beta_\textrm{OLS}]$; 
+# - so, the posterior mean of $\beta$ is the weighted average of 
+#   1. the OLS estimate from $X, y$;
+#   2. the prior mean $\beta_0$;
+# - since $\mathrm{var}[\beta_\textrm{OLS}] = \sigma^2 (X^\mathsf{T}X)^{-1}$ 
+# - and $\mathrm{var}[\beta] = \sigma^2 V_0$ by definition, 
+# - then, $V_N = (\mathrm{var}[\beta]^{-1} + \mathrm{var}[\beta_\textrm{OLS}]^{-1})^{-1}$ 
+# - and $\beta_N =  (\mathrm{var}[\beta]^{-1} + \mathrm{var}[\beta_\textrm{OLS}]^{-1})^{-1} [\mathrm{var}[\beta]^{-1} \beta_0 + \mathrm{var}[\beta_\textrm{OLS}]^{-1} \beta_\textrm{OLS}]$; 
+# - the weights of the weighted average are just the inverse variances (i.e. precision) 
+# of each source of information (the prior mean and the OLS estimator);  
+# - since $\lim\limits_{N \rightarrow \infty} X^\mathsf{T}X = \infty$, 
+# $\beta_\textrm{OLS}$ sensibly becomes more important;
+# - therefore, Bayesian regression and frequentist (OLS) regression give the same result as large sample size. 
+# - the prior predictive distribution $p(y|X)$ is also calculated by factorization;
+# - $p(y|X) = \ldots$ (multivariate normal with mean $X\beta_0$ and covariance $\sigma^2 (X V_0X^\mathsf{T} + I_N)$);
+# - the posterior predictive distribution can be calculated for a new sample $(\tilde{y},\tilde{X})$ of size $M$;
+# - i.e. predict $\tilde{y}$ from $\tilde{X}$ and previous sample; 
+# - the posterior $p(\beta|y,X)$ is the new prior;
+# - same likelihood $p(\tilde{y}|\tilde{X},y,X) = p(\tilde{y}|\tilde{X},\beta$;
+# - factorization, $p(\beta|\tilde{X},y,X) \; p(\tilde{y}|\tilde{X},y,X) = p(\tilde{y}|\tilde{X},\beta) \; p(\beta|y,X)$;
+# - result: $\tilde{y}$ is multivariate normal with mean $\tilde{X}\beta_N$ and covariance $\tilde{X}V_N\tilde{X}^\mathsf{T} + I_M$;     
+#
+# 
+# Case: *unknown* $\beta$ and *unknown* variance $\sigma^2$.
+# - Similar as before but hierarchical...
+#  
+
+
 # %%
