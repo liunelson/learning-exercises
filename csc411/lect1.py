@@ -190,7 +190,7 @@ ax.set_title('Voronoi Diagram')
 # - typically better in practice.
 
 # %%[markdown]
-# ## Lecture 4 - Ensembles
+# ## Lecture 4 - Ensembles (Part I)
 # 
 # An *ensemble* of predictors is a set of predictors 
 # whose individual decisions are combined to classify 
