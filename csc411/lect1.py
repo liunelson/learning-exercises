@@ -189,4 +189,71 @@ ax.set_title('Voronoi Diagram')
 # - can define complex distance measures;
 # - typically better in practice.
 
-# %%
+# %%[markdown]
+# ## Lecture 4 - Ensembles
+# 
+# An *ensemble* of predictors is a set of predictors 
+# whose individual decisions are combined to classify 
+# new observations, e.g. majority vote.
+# 
+# The predictors could differ by 
+# the algorithms used, hyperparameter choices, 
+# training datasets used, etc. 
+#  
+# Two types: *bagging* or *boosting*.
+# 
+# *Loss function*:
+# - measures the difference between the prediction/estimate $y$  
+# and the target $t$;
+# - e.g. $L_{0-1}(y,t) = \begin{cases} 0 & y = t \\ 1 & y \neq t \end{cases}$;
+# - e.g. $L_\textrm{SE} = \frac{1}{2} (y - t)^2$.
+# 
+# 
+# *Bias-variance decomposition*:
+# - consider a model trained over a set of training sets;  
+# - the prediction $y$ at some query point $x$ is a random variable,     
+# where the randomness is based on the choice of the training set;
+# - treating $t$ as a random variable, 
+# $y_\star = \mathrm{E}[t|x]$ is the best possible prediction;
+# - $\mathrm{E}[(y-t)^2|x] = (y - y_\star)^2 + \mathrm{var}[t|x]$;
+# - the 2nd term is called the *Bayes error* (inherent unpredictability/noise);
+# - treating $y$ as a random variable, 
+# $\mathrm{E}[(y-t)^2|x] = \ldots = (y_\star - \mathrm{E}[y|x])^2 + \mathrm{var}[y|x] + \mathrm{var}[t|x]$;
+#    1. *bias* error (i.e. underfitting);
+#    2. *variance* error (i.e. overfitting);
+#    3. Bayes error; 
+# - simplistic model (e.g. kNN with high $k$): 
+# high bias but low variance; 
+# - complicated model (e.g. kNN with low $k$): 
+# low bias but high variance; 
+# 
+# 
+# ### Bagging
+# 
+# If $m$ independent training sets could be obtained from 
+# the generating distribution $p_\textrm{data}$,
+# compute $y = \frac{1}{m} \sum\limits_{i=1}^m y_i$ 
+# where $y_i$ is the prediction based on each training set.
+# 
+# Changes: 
+# - Bayes error: unchanged;
+# - bias: unchanged; 
+# - variance: reduced due to sampling.
+# 
+# Problem: more data may be impossible.
+# Solution: *bootstrap aggregation* or *bagging*.
+# - given a training set of size $n$;
+# - generate $m$ new sets by sampling uniformly 
+# and with replacement (elements can be selected more than once);
+# - since datasets are no longer independent, 
+# $\mathrm{var}\left[\frac{1}{m}\sum\limits_{i=1}^m \right] = \frac{1}{m} (1-\rho) \sigma^2 + \rho \sigma^2$;
+# - $\rho$ is correlation of the sampled predictions; 
+# - add more randomness to reduce $\rho$.
+#  
+# 
+# *Random forests* is an ensemble of random decision trees: 
+# - decision trees + bagging + randomness for decorrelation;
+# - at each node, choose a random set of $d$ input features 
+# and split only on these;
+# - fixes overfitting of decision trees.
+# 
