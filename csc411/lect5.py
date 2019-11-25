@@ -74,7 +74,7 @@
 # - a *regularizer* is a function that quantifies the cost of one hypothesis vs. another;
 # - it appears as an extra term $\mathcal{R}$ in the cost function,  
 # $\mathcal{L} \rightarrow \mathcal{L} + \lambda \mathcal{R}$;
-# - an example is the $L^2$ regularizer, $\mathcal{R} = \frac{1}{2} |w|^2;
+# - an example is the $L^2$ regularizer, $\mathcal{R} = \frac{1}{2} |w|^2$;
 # - $\lambda$ is a hyperparameter to be tuned by cross-validation again;
 # - thus, $w \leftarrow \begin{align} & w - \alpha \: \nabla_w \mathcal{C} \\ &= (1-\alpha \lambda)w - \alpha \end{align}$
 # - or $w(n) \sim \mathrm{e}^{-\lambda n}$
@@ -134,6 +134,67 @@ _ = ax[_].legend()
 # %%[markdown]
 # 
 # ## Lecture 8 - Linear Classification (Part II) 
-
-
+#
+# Gradient checking: 
+# - check if partial derivatives in gradient descent calculation 
+# is correct; 
+# - two-sided definition, 
+# $\frac{\partial}{\partial x_i}f(x_1, \ldots, x_i, \ldots, x_N) = \lim\limits_{h \rightarrow 0} \frac{f(x_1, \ldots, x_i + h, \ldots, x_N) - f(x_1, \ldots, x_i - h, \ldots, x_N)}{2 h}$
+# - relative error, $\frac{|a - b|}{|a| + |b|} \ll 10^{-6}$. 
+# 
+# 
+# Stochastic gradient descent (SGD):
+# - the cost function and its gradient requires summing over all training examples 
+# - this is called *batch training*, $\frac{\partial \mathcal{C}}{\partial \theta} = \frac{1}{N} \sum\limits_{n = 1}^N \mathcal{C}(y(x_n), \theta), t_n)$;   
+# - alternative: 
+# update the model parameters using a gradient calculated 
+# over a subset of $S$ training examples (*mini-batch*);  
+# - i.e. $\theta \leftarrow \theta - \alpha \frac{1}{S} \sum\limits_{n=1}^S \frac{\partial \mathcal{C}}{\partial \theta}$
+# - Every pass over the entire training set is called an *epoch*;
+# - advantage is that the stochastic gradients have $\frac{1}{S}$ smaller variances 
+# than the individual gradients; 
+# - $S$ is a hyperparameter to be cross-validated.
+# 
+# 
+# Convexity:
+# - a set $S$ is *convex* if any line segment connecting points in $S$ 
+# lies entirely in $S$, 
+# $x_1, x_2 \in S \; \Rightarrow \; \lambda x_1 + (1 - \lambda) x_2 \in S \; \forall \; 0 \leq \lambda \leq 1$; 
+# corollary, weighted averages (i.e. convex combinations) 
+# do lie within the set;
+# - a *convex function* is one for which 
+# $f(\lambda x_1 + (1 - \lambda) x_2) \leq \lambda f(x_1) + (1 - \lambda) f(x_2)$  
+# - all critical points of convex functions are minima;
+# - gradient descent does find the optimal solution in such cases.
+# 
+# 
+# Multiclass linear classification: 
+# - classification with more than two categories; 
+# - express multiclass targets as *one-hot* or *one-of-K* vectors, 
+# $t = [0\: \cdots \: 0 \: 1 \: 0\: \cdots 1]$;
+# - this can be written as $z_k = \sum\limits_n w_{kn} x_n + b_k$ or $z = W X + b$ 
+# where $W$ is a $K \times N$ weight matrix;
+# - a useful activation function is the *softmax* function 
+# (i.e. *soft-argmax* or Boltzmann),
+# $y_k = \mathrm{softmax}(z_1,\ldots,z_K)_k = \sigma(z)_k = \frac{\mathrm{e}^{z_k}}{\sum\limits_{k^\prime} \mathrm{e}^{z_{k^\prime}}}$;
+# - the inputs $z_k$ are called *logits*; 
+# - use the cross-entropy as loss function: 
+# $\mathcal{L}(y, t) = - \sum\limits_{k=1}^K t_k \ln(y_k) = - t^\mathsf{T} \ln(y)$
+# - altogether: the *softmax-cross-entropy* function 
+# - steps: 
+#    1. $z = W x + b$;
+#    2. $y = \mathrm{softmax}(z)$; 
+#    3. $\mathcal{L} = -t^\mathsf{T} \ln(y)$;
+# 
+#     
+# Limits of linear classification
+# - the outputs of the $\mathrm{XOR}$ function 
+# are not linearly separable but can still be classified using a feature map, 
+# $\psi([x_1 \; x_2]) = [x_1 \; x_2 \; x_1 x_2]$;
+# - general solution: use neural networks to learn nonlinear hypotheses.
+# 
+# 
+# 
+# 
+#     
 # %%
