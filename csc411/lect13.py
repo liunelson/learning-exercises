@@ -227,14 +227,55 @@
 # - $\mathbf{x}_n$ belongs to $K$ classes;  
 # - similarity measure $\rightarrow$ Euclidean distance;
 # 
+# 
+# Objective: 
+# - Find clusters centres $\mathbf{m}$ and assignments $\mathbf{r}$ 
+# to minimize the sum of squared distances of data points $\{\mathbf{x}^{(n)}\}$  
+# to their assigned clusters centres;
+# - $\min\limits_{\{\mathbf{m}\}, \{\mathbf{r}\}} J(\{\mathbf{m}\}, \{\mathbf{r}\})$;
+# - $J(\{\mathbf{m}\}, \{\mathbf{r}\}) = \sum\limits_{n=1}^N\sum\limits_{k=1}^K r_k^{(n)} ||\mathbf{m}_k - \mathbf{x}^{(n)} ||^2$;
+# - such that $\sum\limits_{k=1}^K r_k^{(n)} = 1 \: \forall \: n$; 
+# - where $r_k^{(n)} \in \{0, 1\} \: \forall \: k,n$;
+# - where $r_k^{(n)} = 1$ means that $\mathbf{x}^{(n)}$ is assigned to cluster $k$.
+# 
+# 
+# Optimization method: 
+# - *block/coordinate descent*;
+# - successively minimize along different coordinates ($\{\mathbf{m}\}$ vs $\{\mathbf{r}\}$)
+# 
+# 
+# Algorithm: 
+# 
+# 1. initialization: set $K$ cluster centres $\mathbf{m}_k$ to random values;
+# 2. assignment: assign each of $N$ data points $\mathbf{x}^{(n)}$ to nearest cluster 
+#    - $\hat{k}^{(n)} = \arg \min\limits_k d(\mathbf{m}_k, \mathbf{x}^{(n)})$
+#    - e.g. $L^2$ distance
+#    - define *responsibilities* (1-hot encoding), $r_k^{(n)} = 1 \leftrightarrow \hat{k}^{(n)} = k$ 
+# 3. refitting: adjust model parameter (cluster centres) to match sample mean of data points   
+#    - $\mathbf{m}_k = \frac{\sum_n r_k^{(n)} \mathbf{x}^{(n)}}{\sum_n r_k^{(n)}}$
+# 
+# 
+# Example of use: 
+# - vector quantization ($\mathbf{x} = [l, a, b]$);
+# - image segmentation ($\mathbf{x} = [x, y, l, a, b]$);
+# 
+# 
+# Test for convergence:
+# - check when objective function $J$ reaches minimum;
+# - since $J$ is non-convex, no guarantee of convergence to global minimum;
+# - solution: many random starting $\mathbf{m}_k$ 
+# or split-merge (split large clusters, merge nearby ones).
+# 
 #  
-# Alternate between *cluster assignment* and *computing cluster means*.
+# Soft k-means:
+# - allow *soft* (non-integer) responsibilities;   
+# - $r_k^{(n)} = \sigma \left(\beta \; d(\mathbf{m}_{k^\prime}, \mathbf{x}^{(n)}) \right) = \frac{\exp \left(\beta \; d(\mathbf{m}_k, \mathbf{x}^{(n)}) \right)}{\sum_{k^\prime}\exp \left(\beta \; d(\mathbf{m}_{k^\prime}, \mathbf{x}^{(n)}) \right)}$; 
+# - weighted refit, $\mathbf{m}_k = \frac{\sum\limits_n r_k^{(n)} \mathbf{x}^{(n)}}{\sum\limits_n r_k^{(n)}}$
 #  
-# k-means clustering: 
-# - initialization, randomly choose points as cluster centres; 
-# - iteratively alternate
-#    1. *cluster assignment* (assign data points to their nearest cluster);
-#    2. *refitting* (move cluster centres to the centre of gravity of assigned points);
+# 
+# Problems: 
+# - How to set $\beta$?
+# - Elongated clusters?
+# - Clusters of different weight and size?
+# 
 
-
-# %%
