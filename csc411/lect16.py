@@ -162,9 +162,176 @@
 # - indicator matrix for rows $\times$ matrix of means for each block $\times$ indicator matrix for columns;
 # 
 # 
-# *Efficient coding hypothesis*
-#  
-#  
-#        
+# *Sparse coding*:
+# - represent natural data (images and sounds) $\mathbf{x}$ 
+# using a dictionary of basis functions $\{\mathbf{a}_k\}_{k=1}^K$;  
+# - $\mathbf{x} \approx = \sum\limits_{k=1}^K s_k \mathbf{a}_k = \mathbf{A} \mathbf{s}$;
+# - Since only a few basis functions are used, $\mathbf{s}$ is a sparse vector;
+# - choose $\mathbf{s}$ with cost function $\min\limits_\mathbf{s} \left( || \mathbf{x} - \mathbf{A}\mathbf{s}||^2 + \beta ||\mathbf{s}||_1 \right)$;
+# - learn dictionary by optimizing both $\mathbf{A}$ and $\{\mathbf{s}_k\}_{n=1}^N$
+# - i.e. $\min\limits_{\mathbf{A},\{\mathbf{s}_n\}} \left(|| \mathbf{X} - \mathbf{A}\mathbf{S}||_\textrm{F}^2 + \beta ||\mathbf{s}_n||_1 \right)$;
+# - subject to $||\mathbf{a}_k||^2 \leq 1 \: \forall \: k$;    
+# - fit using ALS;
+# - learned dictionary efficiently tiles all degrees of freedom. 
+   
+# %%[markdown] 
+# ## Lecture 19 - Bayesian Linear Regression
+# 
+# Both parametric and non-parametric models for regression and classification 
+# have been covered: 
+# - parametric, e.g. linear and logistic regression, neural networks, SVM, naive Bayes, GDA; 
+# - non-parametric, e.g. k-nearest neighbour (KNN)
+# 
+# 
+# Next: Bayes linear regression (parametric model).
+# 
+# Recall linear regression:
+# - given training set of inputs and targets 
+# $\{(\mathbf{x}^{(n)}, t^{(n)})\}_{n=1}^N$; 
+# - linear model, $y = \mathbf{w}^\mathsf{T} \boldsymbol{\psi}(mathbf{x})$; 
+# - squared-error loss function, 
+# $\mathcal{L}(y, t) = \frac{1}{2} (t - y)^2$;
+# - $L^2$ regularization, $\mathcal{R}(\mathbf{w}) = \frac{1}{2} \lambda || \mathbf{w}||^2$;
+# - analytical solution (set gradient to $0$): $\mathbf{w} = ( \mathbf{\Psi}^\mathsf{T} \mathbf{\Psi} + \lambda \mathbf{I})^{-1} \mathbf{\Psi}^\mathsf{T} \mathbf{t}$;
+# - approximate solution (gradient descent): $\mathbf{w} \leftarrow (1 - \alpha \lambda) \mathbf{w} - \alpha \mathbf{\Psi}^\mathsf{T} (\mathbf{y} - \mathbf{t})$.
+# 
+# 
+# Extensions: 
+# - assuming Gaussian noise, 
+# we get maximum likelihood method under this model;
+# - i.e. $\begin{align} \mathbf{t} | \mathbf{x} & \sim \mathcal{N}(\mathbf{y}(\mathbf{x}), \sigma^2) \\ \log \prod_{n=1}^N p(t^{(n)}|\mathbf{x}^{(n)}; \mathbf{w},b)^{1/N} & = \ldots = \mathrm{const} - \frac{1}{2 N \sigma^2} \sum\limits_{n=1}^N (t^{(n)} - \mathbf{y}(\mathbf{x}))^2 \end{align}$;
+# - $L^2$ regularizer can be viewed as MAP inference with Gaussian prior
+# - MAP inference: 
+# $\begin{align} \arg\max\limits_\mathbf{w} \log p(\mathbf{w}|\mathcal{D}) &= \arg\max\limits_\mathbf{w} \left( \log p(\mathbf{w}) + \log p(\mathcal{D}|\mathbf{w}) \right) \\ \log p(\mathcal{D}|\mathbf{w}) &= \textrm{as above} \end{align}$;
+# - Gaussian prior:  
+# $\begin{align} \mathbf{w} &\sim \mathcal{N}(\mathbf{m},\mathbf{S}) \\ \log p(\mathbf{w}) &= \ldots \\ &= -\frac{1}{2 \eta} ||\mathbf{w}||^2 + \textrm{const}\end{align}$ 
+# 
+# 
+# Full Bayesian inference:
+# - make prediction by averaging over all likely explanations
+# under the posterior distribution;
+# - compute posterior using Bayes' Rule: 
+# $p(\mathbf{w}|\mathcal{D}) \propto p(\mathbf{w}) p(\mathcal{D}|\mathbf{w})$;
+# - make prediction using the posterior predictive distribution:    
+# $p(t|\mathbf{x},\mathcal{D}) = \int p(\mathbf{w}|\mathcal{D}) p(t|\mathbf{x},\mathbf{w}) \mathrm{d}\mathbf{w}$.
+# 
+# 
+# Bayesian linear regression:
+# - make predictions using all possible weights, weighted by their posterior probability;
+# - prior distribution: $\mathbf{w} \sim \mathcal{N}(0, \mathbf{S})$;
+# - likelihood: $t | \mathbf{x},\mathbf{w} \sim \mathcal{N}(\mathbf{y}(\mathbf{x}), \sigma^2)$;  
+# - posterior distribution: 
+# $\begin{align} \log p(\mathbf{w}|\mathcal{D}) &= \log p(\mathbf{w} + \log p(\mathcal{D}|\mathbf{w}) + \mathrm{const} \\ &= \ldots \\ &= \log \mathcal{N}(\boldsymbol{\mu}, \mathbf{\Sigma}) \end{align}$;
+# - i.e. a multivariate Gaussian distribution, 
+# $\begin{align} \boldsymbol{\mu} &= \frac{1}{\sigma^2} \mathbf{\Sigma} \mathbf{\Psi}^\mathsf{T} \mathbf{t} \\ \mathbf{\Sigma}^{-1} &= \frac{1}{\sigma^2} \mathbf{\Psi}^\mathsf{T} \mathbf{\Psi} + \mathbf{S}^{-1} \end{align}$;
+# - posterior predictive distribution: 
+# $p(t|\mathbf{x},\mathcal{D}) = \int p(\mathbf{w}|\mathcal{D}) p(t|\mathbf{x},\mathbf{w}) \mathrm{d}\mathbf{w} = \int \mathcal{N}(t; \mathbf{y}(\mathbf{x}), \sigma) \mathcal{N}(\mathbf{w}; \mathbf{\mu},\mathbf{\Sigma}) \mathrm{d}\mathbf{w}$;
+# - i.e. a Gaussian with parameters 
+# $\mu_\textrm{pred} = \mu^\mathsf{T} \boldsymbol{\psi}(\mathbf{x})$ 
+# and $\sigma_\textrm{pred}^2 = \boldsymbol{\psi}(\mathbf{x})^\mathsf{T} \mathbf{\Sigma} \boldsymbol{\psi}(\mathbf{x}) + \sigma^2$.    
+#
+# 
+# As more data points $(\mathbf{x}, t)$ are observed,
+# the posterior predictive distribution narrows.
+# 
+# Example use: 
+# - *decision theory*: 
+# choose a single prediction $y$ to minimize the expected squared-error loss;
+# - $\arg \min\limits_y \mathrm{E}_{p(t|\mathbf{x},\mathcal{D})}[(y - t)^2] = \mathrm{E}_{p(t|\mathbf{x},\mathcal{D})}[t]$; 
+# 
+#     
+# 
+# *Black-box optimization*: 
+# - minimize a function with just queries of function values;
+# - i.e. no gradient; 
+# - each query could be expensive so few as possible;
+# - e.g. minimize validation error of an ML algorithm with respect to its hyperparameters.
+# - *Bayesian optimization*: 
+#    - approximate the function with simpler functions (*surrogate function*);
+#    - condition on the few data points $\in \mathcal{D}$ to infer posterior using Bayesian linear regression;
+#    - define an *acquisition function* to choose the next point to query;
+#    - desired properties: high for good and uncertain points, low for known points; 
+#    - candidates: 
+#        1. *probability of improvement* (PI), $\textrm{PI} = \mathrm{Pr}(f(\theta) < \gamma - \epsilon)$;
+#        2. *expected improvement* (EI), $\textrm{EI} = \mathrm{E}[\max(\gamma - f(\theta), 0)]$.
+#    - maximize the acquisition function using gradient descent;
+#    - use random restarts to avoid local maxima. 
 
-# %%
+# %%[markdown] 
+# ## Lecture 20 - Gaussian Processes
+# 
+# Gaussian processes: 
+# - generalization of Bayesian linear regression; 
+# - distributions over functions.
+# 
+# 
+# A Bayesian linear regression model defines a distribution over functions: 
+# - $f(\mathbf{x}) = \mathbf{w}^\mathsf{T} \mathbf{\psi}(\mathbf{x})$;
+# - $\mathbf{w}$ sampled from the prior $\mathcal{N}(\mathbf{\mu}_\mathbf{w}, \mathbf{\Sigma}_\mathbf{w})$; 
+# - let $\mathbf{f} = (f_1, \ldots, f_N) = (f(\mathbf{x}_1), \ldots, f(\mathbf{x}_N))$; 
+# - by linear transformation of Gaussian random variables, $\mathbf{f}$ is a Gaussian too, with: 
+#    - $\mathrm{E}[f_n] = \mathbf{\mu}_\mathbf{w} \mathbf{\psi}(\mathbf{x})$; 
+#    - $\mathrm{cov}[f_m, f_n] = \mathbf{\psi}(\mathbf{x}_m) \mathbf{\Sigma}_\mathbf{w} \mathbf{\psi}(\mathbf{x}_n)$; 
+# - $\mathbf{f} \sim \mathcal{N}(\mathbf{\mu}_\mathbf{f}, \mathbf{\Sigma}_\mathbf{f})$;
+#    - $\mathbf{\mu}_\mathbf{f} = \mathrm{E}[\mathbf{f}] = \mathbf{\Psi} \mathbf{\mu}_\mathbf{w}$;
+#    - $\mathbf{\Sigma}_\mathbf{f} = \mathrm{cov}[\mathbf{f}] = \mathbf{\Psi} \mathbf{\Sigma}_\mathbf{w} \mathbf{\Psi}^\mathsf{T}$;
+# - assume noisy Gaussian observations, $y_n \sim \mathcal{N}(f_n, \sigma^2)$;
+# - i.e. $\mathbf{y} \sim \mathcal{N}(\mathbf{\mu}_\mathbf{y}, \mathbf{\Sigma}_\mathbf{y})$; 
+#    - $\mathbf{\mu}_\mathbf{y} = \mathbf{\mu}_\mathbf{f}$;
+#    - $\mathbf{\Sigma}_\mathbf{y}) = \mathbf{\Sigma}_\mathbf{f}) + \sigma^2 \mathbf{I}$;
+# - let $\mathbf{y}, \mathbf{y}^\prime$ be the training and test data;
+#    - both are jointly Gaussian;
+#    - $\mathbf{y}^\prime | \mathbf{y} \sim \mathcal{N}(\mathbf{\mu}_{\mathbf{y}^\prime | \mathbf{y}}, \mathbf{\Sigma}_{\mathbf{y}^\prime | \mathbf{y}})$;
+#    - $\mathbf{\mu}_{\mathbf{y}^\prime | \mathbf{y}} = \mathbf{\mu}_\mathbf{y} + \mathbf{\Sigma}_{\mathbf{y}^\prime \mathbf{y}} \mathbf{\Sigma}_{\mathbf{y} \mathbf{y}}^{-1} (\mathbf{y} - \mathbf{\mu}_\mathbf{y})$;
+#    - $\mathbf{\Sigma}_{\mathbf{y}^\prime | \mathbf{y}} = \mathbf{\Sigma}_{\mathbf{y}^\prime \mathbf{y}^\prime} + \mathbf{\Sigma}_{\mathbf{y}^\prime \mathbf{y}} \mathbf{\Sigma}_{\mathbf{y} \mathbf{y}}^{-1} \mathbf{\Sigma}_{\mathbf{y} \mathbf{y}^\prime}$;
+# - then the marginal likelihood is the PDF of a Gaussian, $p(\mathbf{y}|\mathbf{X}) = \mathcal{N}(\mathbf{y}; \mathbf{\mu}_\mathbf{y}, \mathbf{\Sigma}_\mathbf{y})$; 
+# - after defining $\mathbf{\mu}_\mathbf{f}, \mathbf{\Sigma}_\mathbf{f}$, we can forget about $\mathbf{w}$.
+# 
+# 
+# Gaussian processes: 
+# - specify 
+#    - a mean function $\mathrm{E}[f(\mathbf{x}_n)] = \mu(\mathbf{x}_n)$; 
+#    - a convariance function (called *kernel function*) $\mathrm{cov}[f(\mathbf{x}_m), f(\mathbf{x}_n)] = k(\mathbf{x}_m, \mathbf{x}_n)$;
+# - let $\mathbf{K}_\mathbf{X}$ denote the kernel matrix for points $\mathbf{X}$ (also called the *Gram matrix*);
+# - i.e. $(\mathbf{K}_\mathbf{X})_{ij} = k(\mathbf{x}_i, \mathbf{x}_j)$; 
+# - require that $\mathbf{K}_\mathbf{X}$ be positive semidefinite for any $\mathbf{X}$; 
+# - $\mu, k$ can be arbitrary...
+# - this defines a distribution over *function values*; 
+# - can be extended to a distribution over *functions* using the *Kolmogorov Extension Theorem*; 
+# - such distribution over functions is called a *Gaussian process*;
+# 
+# 
+# *Kernel Trick*:
+# - many algorithms can be written in terms of dot products between feature vectors  
+#   $\langle \mathbf{x}, \mathbf{x}^\prime \rangle = \mathbf{\psi}(\mathbf{x})^\mathsf{T} \mathbf{\psi}(\mathbf{x}^\prime)$;
+# - a *kernel* implements an inner product between feature vectors;
+# - e.g. feature vector $\phi(\mathbf{x}) = [1 \: \sqrt{2}x_1 \: \ldots \: \sqrt{2}x_d \: \sqrt{2}x_1 x_2 \: \ldots \: \sqrt{2} x_{d-1}x_d \: x_1^2 \ldots x_d^2]$
+# - the *quadratic kernel* can compute the inner product in linear time; 
+#    - $\begin{align} k(\mathbf{x}, \mathbf{x}^\prime) &= \langle \mathbf{x}, \mathbf{x}^\prime \rangle \\ &= 1 + \sum\limits_{i=1}^d 2 x_i x_i^\prime + \sum\limits_{i,j=1}^d x_i x_j x_i^\prime x_j^\prime \\ &= \left( 1 + \langle \mathbf{x},\mathbf{x}^\prime \rangle \right)^2 \end{align}$;     
+# - many algorithms can be written in terms of kernels (*kernelized*);
+# - useful composition rules:
+#    - $k(\mathbf{x},\mathbf{x}^\prime) = \alpha$ is a kernel;
+#    - if $k_1, k_2$ are kernels and $a, b \geq 0$, then $a k_1 + b k_2$ is a kernel too;
+#    - $k(\mathbf{x},\mathbf{x}^\prime) = k_1(\mathbf{x},\mathbf{x}^\prime) k_2(\mathbf{x},\mathbf{x}^\prime)$ is also kernel;
+# - before artificial neural networks, kernel SVM is the best at classification;   
+# 
+# 
+# Computational cost of the kernel trick:
+# - allows the use of very high-dim. feature spaces but at a cost;
+# - Bayesian linear regression: need to invert a $d \times d$ matrix;
+# - GP regression: need to invert a $N \times N$ matrix;
+# - $\mathcal{O}(N^3)$ cost is typical of kernel methods; 
+# 
+# 
+# GP kernels: 
+# - define kernel function by giving a set of basis functions 
+# and put a Gaussian prior on $\mathbf{w}$;
+# - e.g. *squared-exponential* or *Gaussian* or *radial basis function* (RBF) kernel  
+#    - $k(\mathbf{x}_i,\mathbf{x}_j) = \sigma^2 \exp \left(- \frac{|| \mathbf{x}_i - \mathbf{x}_j ||^2}{2 \ell^2} \right)$ 
+# - this is a *kernel family* with hyperparameters $\sigma, \ell$;
+# - $\sigma^2$ is the output variance;
+# - $\ell$ is the lengthscale;
+# - choice of these hyperparameters heavily affects the predictions; 
+# - tune them by e.g. maximizing marginal likelihood;    
+# - this kernel is *stationary* since it depends only on $\mathbf{x}_i - \mathbf{x}_j$; 
+# - most kernels are stationary;
