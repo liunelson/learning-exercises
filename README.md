@@ -1,5 +1,7 @@
 # learning-exercises
 
+- `bh_tsne`: Barnes-Hut t-distributed stochastic neighbour embedding, based on the paper [L. van der Maaten, "Accelerating t-SNE using Tree-Based Algorithms," J. Mach. Learn. Res., (2014)](https://lvdmaaten.github.io/publications/papers/JMLR_2014.pdf).
+
 - `csc411`: Lecture notes following the slides of [CSC 411](http://www.cs.toronto.edu/~rgrosse/courses/csc411_f18/).
 
 - `gaussian-fit`: Gaussian fitting using a weighted least-square approach (vectorized) from [A Simple Algorithm for Fitting a Gaussian Function](https://ieeexplore.ieee.org/document/5999593).
