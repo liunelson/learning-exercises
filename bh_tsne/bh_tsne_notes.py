@@ -72,10 +72,56 @@
 #    - estimate $A = \sum\limits_{i \neq j} \left(1 + ||\boldsymbol{y}_i - \boldsymbol{y}_j||^2 \right)^{-1}$ in the same way;
 #    - thus $F_\textrm{rep} = \frac{F_\textrm{rep} \; A}{A}$.
 
-#%% 
-# Let's start with building a quadtree/octree.
+#%% [markdown]
+# Input data for a $n$-body problem: 
+# - $\mathcal{D} = \{m_n, \boldsymbol{x}_n, \boldsymbol{v}_n, \boldsymbol{a}_n\}$;
+# - $m_n$: mass of the objects;
+# - $\boldsymbol{x}_n, \boldsymbol{v}_n, \boldsymbol{a}_n$: position, velocity, and acceleration of the objects.  
 
+#%%
 import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+
+# Define input variables
+num_dim_emb = 3
+num_obj = 100
+input_data = {
+    'mass': np.ones((num_obj, 1)), 
+    'pos': np.empty((num_obj, num_dim_emb)), 
+    'vec': np.empty((num_obj, num_dim_emb)),
+    'acc': np.zeros((num_obj, num_dim_emb)),
+    }
+
+# Generate test objects
+np.random.seed(0)
+def gen_rand_clusters(input_data, type):
+    
+    num_obj = input_data['mass'].shape[0]
+    num_dim_emb = input_data['pos'].shape[1]
+
+    if type == 'normal':
+        input_data['pos'] = np.random.randn(num_obj, num_dim_emb)
+        input_data['vec'] = np.random.randn(num_obj, num_dim_emb)
+        input_data['acc'] = np.zeros((num_obj, num_dim_emb))
+
+    return input_data
 
 
+input_data = gen_rand_clusters(input_data, 'normal')
+
+
+
+# Plot objects
+fig = plt.figure(figsize = (4, 4))
+ax = fig.add_subplot(111, projection = '3d')
+ax.scatter(input_data['pos'][:, 0], input_data['pos'][:, 1], input_data['pos'][:, 2], (0.1)*input_data['mass'])
+
+i = np.ceil(np.max(np.abs([input_data['pos'].max(), input_data['pos'].min()])))
+ax.set_xlim(-i, i)
+ax.set_ylim(-i, i)
+ax.set_zlim(-i, i)
+
+
+
+# %%
