@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import matplotlib.text as txt
 import matplotlib.cm as cm
 from mpl_toolkits.mplot3d import Axes3D
-from sklearn import (datasets, manifold)
+from sklearn import (datasets, decomposition, manifold)
 
 # %%
 # Load MNIST data (data: images, target: labels)
@@ -39,17 +39,27 @@ for i in range(5):
 n_neighbours = 30
 n_dim_emb = 3
 
-# tSNE
-tsne = manifold.TSNE(n_components = n_dim_emb, perplexity = n_neighbours, init = 'pca', random_state = 0, method = 'barnes_hut')
+# PCA
 t0 = time()
+pca = decomposition.TruncatedSVD(n_components = n_dim_emb)
+data_pca = pca.fit_transform(data)
+t1 = time() - t0
+print(f'Elapsed time for PCA: {t1} s')
+
+# tSNE
+t0 = time()
+tsne = manifold.TSNE(n_components = n_dim_emb, perplexity = n_neighbours, init = 'pca', random_state = 0, method = 'barnes_hut')
 data_tsne = tsne.fit_transform(data)
 t1 = time() - t0
-
 print(f'Elapsed time for tSNE: {t1} s')
+
 
 # %% 
 # Plot result
-def plot_emb(data, target):
+def plot_emb(data, target, str_title):
+
+    # Centroid
+    r0 = np.median(data, axis = 0)
 
     # Tableau colormap
     n_col = (np.unique(target)).size
@@ -58,20 +68,20 @@ def plot_emb(data, target):
     # Plot
     fig = plt.figure(figsize = (6, 6))
     ax = fig.add_subplot(111, projection = '3d')
-    plt.setp(ax, title = 'tSNE Plot of the MNIST Dataset')
+    plt.setp(ax, title = str_title)
     # ax.scatter(data[:, 0], data[:, 1], data[:, 2], s = 5, c = target, cmap = 'tab10', label = [0, 1, 2, 3, 4])
     for i in range(10):
         j = (target == i)
-        ax.scatter(data[j, 0], data[j, 1], data[j, 2], s = 5, cmap = col[i, :3], label = f'{i}')
+        ax.scatter(data[j, 0] - r0[0], data[j, 1] - r0[1], data[j, 2] - r0[2], s = 5, cmap = col[i, :3], label = f'{i}')
         
     # ax.set_axis_off()
+    # ax.xticks([])
+    # ax.yticks([])
     ax.legend(loc = 'upper left')
+    
     
 
 # %%
 # Plot embedding
-t0 = time()
-plot_emb(data_tsne, target)
-t1 = time() - t0
-
-
+plot_emb(data_pca, target, 'PCA Plot of the MNIST Dataset')
+plot_emb(data_tsne, target, 'tSNE Plot of the MNIST Dataset')
