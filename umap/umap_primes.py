@@ -25,7 +25,7 @@ import umap as umap
 # %% 
 # List of prime numbers
 t = time()
-max_int = 100000
+max_int = 10000
 prime_num = list(sympy.primerange(2, max_int))
 n_primes = len(prime_num)
 print(f'{n_primes} prime numbers within the first {max_int} integers ({time() - t:.3f} s).')
@@ -85,4 +85,7 @@ print(f'Elapsed time for UMAP fit: {time() - t} s')
 fig = plt.figure(figsize = (6, 6))
 ax = fig.add_subplot(111, projection = '3d')
 ax.scatter(prime_umap_3d.embedding_[:, 0], prime_umap_3d.embedding_[:, 1], prime_umap_3d.embedding_[:, 2], s = 1, c = range(int1, int2), marker = '.', linewidth = 0)
+
+
+
 
